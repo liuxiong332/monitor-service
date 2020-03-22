@@ -49,8 +49,12 @@
   width: 600px;
 }
 
-.ant-form-item-control-input-content {
+.verify-area .ant-form-item-control-input-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.login-form-button {
+  width: 100%;
 }

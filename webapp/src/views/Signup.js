@@ -181,9 +181,10 @@ export default props => {
       </Form.Item>
 
       <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit">
-          登录
+        <Button type="primary" htmlType="submit" className="login-form-button">
+          注册
         </Button>
+        已注册，<a href="/login">去登录!</a>
       </Form.Item>
     </Form>
   );
