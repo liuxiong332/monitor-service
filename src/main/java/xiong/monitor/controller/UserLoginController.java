@@ -56,7 +56,7 @@ public class UserLoginController {
   private Logger logger = LoggerFactory.getLogger(UserLoginController.class);
 
   @PostMapping("/sendVerifyCode")
-  OutputResult sendVerifyCode(@RequestParam String email) throws MessagingException {
+  OutputResult<Object> sendVerifyCode(@RequestParam String email) throws MessagingException {
     int randomNum = (int) Math.floor(Math.random() * 1000000);
     String numStr = String.format("%06d", randomNum);
     System.out.println(String.format("For email %s, get verification code %s", email, numStr));
@@ -79,7 +79,7 @@ public class UserLoginController {
   }
 
   @PostMapping("/signUp")
-  OutputResult signUp(@RequestBody SignUpInfoData loginInfo) {
+  OutputResult<SignInReturnData> signUp(@RequestBody SignUpInfoData loginInfo) {
     if (loginInfo.getEmail() == null) {
       throw new InvalidParamException("The email is not valid.");
     }
@@ -118,7 +118,7 @@ public class UserLoginController {
   }
 
   @PostMapping("/login")
-  OutputResult login(@RequestBody LoginInfoData loginInfo) {
+  OutputResult<SignInReturnData> login(@RequestBody LoginInfoData loginInfo) {
     String username = loginInfo.getUsername();
 
     String encodePwd = "";

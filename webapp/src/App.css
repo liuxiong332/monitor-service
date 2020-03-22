@@ -48,3 +48,9 @@
 #login-form {
   width: 600px;
 }
+
+.ant-form-item-control-input-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -3,6 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import "antd/dist/antd.css";
 import Login from "./views/Login";
+import Signup from "./views/Signup";
 
 import {
   BrowserRouter as Router,
@@ -72,6 +73,9 @@ function MyApp() {
       <Switch>
         <Route path="/login">
           <Login />
+        </Route>
+        <Route path="/signup">
+          <Signup />
         </Route>
         <Route path="/">
           <Content></Content>

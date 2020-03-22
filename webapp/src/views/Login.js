@@ -48,20 +48,16 @@ export default props => {
       onFinishFailed={onFinishFailed}
     >
       <Form.Item
-        label="邮箱"
+        label="用户名"
         name="username"
         rules={[
           {
-            type: "email",
-            message: "不是合法的邮箱!"
-          },
-          {
             required: true,
-            message: "请输入正确的邮箱!"
+            message: "请输入用户名!"
           }
         ]}
       >
-        <Input type="email" />
+        <Input />
       </Form.Item>
 
       <Form.Item
