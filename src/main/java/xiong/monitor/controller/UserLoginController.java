@@ -135,7 +135,7 @@ public class UserLoginController {
     logger.info("select user sql {}", wrapper.getSqlSegment());
     User user = userMapper.selectOne(wrapper);
 
-    if (!user.getPassword().equals(encodePwd)) {
+    if (user == null || !user.getPassword().equals(encodePwd)) {
       throw new UnauthorizatedException("Username or password is incorrect");
     }
 

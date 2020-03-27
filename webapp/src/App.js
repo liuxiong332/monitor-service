@@ -4,7 +4,7 @@ import "./App.css";
 import "antd/dist/antd.css";
 import Login from "./views/Login";
 import Signup from "./views/Signup";
-
+import Main from "./views/MainPage";
 import {
   BrowserRouter as Router,
   Switch,
@@ -77,8 +77,11 @@ function MyApp() {
         <Route path="/signup">
           <Signup />
         </Route>
+        <Route path="/home">
+          <Main />
+        </Route>
         <Route path="/">
-          <Content></Content>
+          <Main></Main>
         </Route>
       </Switch>
     </Router>

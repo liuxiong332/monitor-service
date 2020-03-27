@@ -58,3 +58,26 @@
 .login-form-button {
   width: 100%;
 }
+
+.main-layout {
+  width: 100%;
+  height: 100%;
+}
+
+.main-layout .ant-layout-header {
+  height: 42px;
+  color: #eee;
+  line-height: 42px;
+  padding: 0 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-layout .exit-btn {
+  cursor: pointer;
+}
+
+.main-layout .left-menu {
+  height: 100%;
+}
