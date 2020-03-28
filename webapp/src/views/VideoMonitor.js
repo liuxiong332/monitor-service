@@ -1,4 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  Suspense
+} from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "@videojs/http-streaming";
@@ -9,8 +15,13 @@ import ResizeView from "./ResizeView";
 const { TabPane } = Tabs;
 
 function AllMonitor(props) {
+  function callback(key) {
+    props.onChange(key);
+    console.log(key);
+  }
+
   return (
-    <Tabs defaultActiveKey="1">
+    <Tabs defaultActiveKey="all" onChange={callback}>
       <TabPane style={{ width: 120 }} tab="所有网点" key="all"></TabPane>
       {props.devices.map(device => (
         <TabPane
@@ -40,6 +51,9 @@ function MyVideo(props) {
       document.getElementById("video" + props.deviceId).click();
       player.current.play();
     });
+    return () => {
+      player.current.dispose();
+    };
   }, [props.deviceId]);
 
   useEffect(() => {
@@ -70,7 +84,7 @@ function OneVideoMonitor(props) {
     return <div className="device-column" />;
   }
   return (
-    <ResizeView>
+    <ResizeView key={props.deviceId}>
       <MyVideo deviceId={props.deviceId} />
     </ResizeView>
   );
@@ -80,34 +94,60 @@ export function MultiVideoMonitor(props) {
   let devices = props.devices;
   if (props.devices.length > 1) {
     return (
-      <div className="device-content">
-        <div className="device-row">
-          <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />
-          <OneVideoMonitor deviceId={devices[1] && devices[1].deviceId} />
+      <Suspense>
+        <div className="device-content">
+          <div className="device-row">
+            <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />
+            <OneVideoMonitor deviceId={devices[1] && devices[1].deviceId} />
+          </div>
+          <div className="device-row">
+            <OneVideoMonitor deviceId={devices[2] && devices[2].deviceId} />
+            <OneVideoMonitor deviceId={devices[3] && devices[3].deviceId} />
+          </div>
         </div>
-        <div className="device-row">
-          <OneVideoMonitor deviceId={devices[2] && devices[2].deviceId} />
-          <OneVideoMonitor deviceId={devices[3] && devices[3].deviceId} />
-        </div>
-      </div>
+      </Suspense>
     );
   } else {
-    return <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />;
+    return (
+      <Suspense>
+        <div className="device-content">
+          <div className="device-row">
+            <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />
+          </div>
+        </div>
+      </Suspense>
+    );
   }
 }
 
 export default function MyVideoMonitor() {
   let [devices, setDevices] = useState([]);
+  let [showDevices, setShowDevices] = useState([]);
 
   useEffect(() => {
     request(`/devices`).then(items => {
       setDevices(items);
+      setShowDevices(items);
     });
   }, []);
+
+  const handleChange = useCallback(
+    key => {
+      console.log("change to key", key);
+      if (key === "all") {
+        setShowDevices(devices);
+      } else {
+        let device = devices.find(d => d.deviceId.toString() === key);
+        console.log("Will show device", device);
+        setShowDevices([device]);
+      }
+    },
+    [devices]
+  );
   return (
     <React.Fragment>
-      <AllMonitor devices={devices} />
-      <MultiVideoMonitor devices={devices} />
+      <AllMonitor devices={devices} onChange={handleChange} />
+      <MultiVideoMonitor devices={showDevices} />
     </React.Fragment>
   );
 }

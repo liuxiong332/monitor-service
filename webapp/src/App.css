@@ -95,7 +95,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: calc(100% - 62px);
+  height: calc(100% - 70px);
 }
 
 .device-content .device-row {
