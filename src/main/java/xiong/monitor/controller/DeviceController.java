@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xiong.monitor.device.DeviceCmd;
 import xiong.monitor.entity.Device;
 import xiong.monitor.mapper.DeviceMapper;
 import xiong.monitor.util.OutputResult;
@@ -15,6 +16,8 @@ import java.util.List;
 public class DeviceController {
 
   @Autowired DeviceMapper deviceMapper;
+
+  @Autowired DeviceCmd deviceCmd;
 
   private Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
@@ -33,6 +36,7 @@ public class DeviceController {
   @PostMapping("/devices")
   OutputResult<Long> addDevice(@RequestBody Device device) {
     deviceMapper.insert(device);
+    deviceCmd.addDevice(device.getDeviceId());
     return new OutputResult<>(device.getDeviceId());
   }
 
@@ -47,6 +51,7 @@ public class DeviceController {
   @DeleteMapping("/devices/{id}")
   OutputResult<Object> deleteDevice(@PathVariable Long id) {
     deviceMapper.deleteById(id);
+    deviceCmd.delDevice(id);
     return new OutputResult<>(null);
   }
 }

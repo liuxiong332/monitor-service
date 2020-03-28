@@ -3,6 +3,8 @@ import { Layout } from "antd";
 import { useHistory, Switch, Route } from "react-router-dom";
 import LeftNavBar from "./LeftNavBar";
 import DeviceManager from "./DeviceManager";
+import VideoMonitor from "./VideoMonitor";
+import ResizeView from "./ResizeView";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -35,13 +37,15 @@ export default function MainPage() {
         </Sider>
         <Content>
           <Switch>
+            <Route exact path="/monitor">
+              <VideoMonitor />
+            </Route>
             <Route exact path="/device">
               <DeviceManager />
             </Route>
           </Switch>
         </Content>
       </Layout>
-      <Footer>Footer</Footer>
     </Layout>
   );
 }

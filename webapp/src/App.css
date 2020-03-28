@@ -81,3 +81,34 @@
 .main-layout .left-menu {
   height: 100%;
 }
+
+.ant-tabs-nav .ant-tabs-tab {
+  width: 80px;
+  text-align: center;
+}
+
+.ant-layout-content {
+  margin: 0 10px;
+}
+
+.device-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100% - 62px);
+}
+
+.device-content .device-row {
+  display: flex;
+  flex: 1;
+}
+
+.device-content .device-column {
+  flex: 1;
+  height: 100%;
+  border: 1px solid yellowgreen;
+}
+
+.device-content .device-video-column {
+  border: 1px solid yellowgreen;
+}
