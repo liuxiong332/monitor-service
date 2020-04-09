@@ -1,4 +1,6 @@
 export const Domain = "http://localhost:8080";
+export const MinioDomain = "127.0.0.1";
+export const MinioPort = 9000;
 
 export class ServerError extends Error {
   constructor(code, msg) {

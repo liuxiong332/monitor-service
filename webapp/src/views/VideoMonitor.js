@@ -14,7 +14,7 @@ import ResizeView from "./ResizeView";
 
 const { TabPane } = Tabs;
 
-function AllMonitor(props) {
+export function AllMonitor(props) {
   function callback(key) {
     props.onChange(key);
     console.log(key);
@@ -72,7 +72,7 @@ function MyVideo(props) {
         type="application/x-mpegURL"
       /> */}
       <source
-        src={`http://localhost:8181/live/${props.deviceId}/live.m3u8`}
+        src={`http://12.168.1.161/live/${props.deviceId}/live.m3u8`}
         type="application/x-mpegURL"
       />
     </video-js>

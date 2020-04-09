@@ -112,3 +112,14 @@
 .device-content .device-video-column {
   border: 1px solid yellowgreen;
 }
+
+.img-content {
+  display: flex;
+  flex-wrap: wrap;
+  /* justify-content: space-between; */
+  min-width: 600px;
+}
+
+.img-content img {
+  margin: 10px;
+}
