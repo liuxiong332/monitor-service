@@ -14,6 +14,8 @@ import { request } from "../common";
 import ResizeView from "./ResizeView";
 import { AllMonitor } from "./VideoMonitor";
 import minioClient from "../minio";
+import { DatePicker } from 'antd';
+import moment from "moment";
 
 const { TabPane } = Tabs;
 
@@ -68,9 +70,9 @@ function getAllImgsByDate(prefixs, date, addImg) {
   return new Promise((resolve, reject) => {
 
     if (prefixs.length === 0) return resolve();
-    let prefix = prefixs.pop();
+    let prefix = prefixs[0];
     getImgsByDate(prefix, date, addImg).then(
-      () => getAllImgsByDate(prefixs, date, addImg).then(resolve),
+      () => getAllImgsByDate(prefixs.slice(1), date, addImg).then(resolve),
       reject
     );
   });
@@ -80,6 +82,7 @@ export default function PictureShower() {
   let [devices, setDevices] = useState([]);
   let [showDevices, setShowDevices] = useState([]);
   let [imgUrls, setImgUrls] = useState([]);
+  let [curDate, setCurDate] = useState(() => moment());
 
   useEffect(() => {
     request(`/devices`).then(items => {
@@ -114,17 +117,20 @@ export default function PictureShower() {
   // getAllDevices().then(v => console.log("all devices:", v));
   useEffect(() => {
     let newUrls = [];
-    getAllImgsByDate(devicePrefixs, new Date(), (url) => {
+    getAllImgsByDate(devicePrefixs, curDate, (url) => {
       if (newUrls.indexOf(url) === -1) {
         newUrls.push(url);
       }
       console.log("new url ", newUrls)
     }).then(() => setImgUrls(newUrls));
-  }, [devicePrefixs]);
+  }, [curDate, devicePrefixs]);
 
   return (
     <React.Fragment>
-      <AllMonitor devices={devices} onChange={handleChange} />
+      <div className="picture-tab-header">
+        <AllMonitor devices={devices} onChange={handleChange} />
+        <DatePicker size="small" value={curDate} onChange={setCurDate} />
+      </div>
       <div className="img-content">
         {imgUrls.map(url => <img key={url} src={url} width="200" height="200" />)}
         {imgUrls.length === 0 && <div>没有要展示的图片</div>}

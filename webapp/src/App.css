@@ -123,3 +123,13 @@
 .img-content img {
   margin: 10px;
 }
+
+.picture-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.picture-tab-header .ant-picker {
+  margin-bottom: 16px;
+}
