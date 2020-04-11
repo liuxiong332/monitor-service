@@ -1,0 +1,26 @@
+version: '3'
+services:
+
+    monitor-service:
+        build: .
+        ports:
+        - "8080:8080"
+        environment: 
+            MYSQL_HOST: db
+            REDIS_HOST: redis
+        depends_on:
+        - db
+        - redis
+        restart: always
+
+    redis:
+        image: "redis:alpine"
+        restart: always
+
+    db:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 12345678
+            MYSQL_DATABASE: monitor_service
