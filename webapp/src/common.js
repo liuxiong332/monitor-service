@@ -2,7 +2,7 @@ const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || "localhost";
 const SERVICE_PORT = process.env.REACT_APP_SERVICE_PORT || 8080;
 
 const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || "127.0.0.1";
-const MINIO_PORT = process.env.REACT_APP_MINIO_PORT || 9000;
+const MINIO_PORT = Number(process.env.REACT_APP_MINIO_PORT || 9000);
 
 export const Domain = `http://${SERVICE_HOST}:${SERVICE_PORT}`;
 export const MinioDomain = MINIO_HOST;
