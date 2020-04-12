@@ -13,11 +13,13 @@ import xiong.monitor.util.OutputResult;
 import java.util.List;
 
 @RestController
-public class DeviceController {
+class DeviceController {
 
-  @Autowired DeviceMapper deviceMapper;
+  @Autowired
+  private DeviceMapper deviceMapper;
 
-  @Autowired DeviceCmd deviceCmd;
+  @Autowired
+  private DeviceCmd deviceCmd;
 
   private Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
@@ -36,7 +38,7 @@ public class DeviceController {
   @PostMapping("/devices")
   OutputResult<Long> addDevice(@RequestBody Device device) {
     deviceMapper.insert(device);
-    deviceCmd.addDevice(device.getDeviceId());
+    deviceCmd.updateDevices();
     return new OutputResult<>(device.getDeviceId());
   }
 
@@ -51,7 +53,7 @@ public class DeviceController {
   @DeleteMapping("/devices/{id}")
   OutputResult<Object> deleteDevice(@PathVariable Long id) {
     deviceMapper.deleteById(id);
-    deviceCmd.delDevice(id);
+    deviceCmd.updateDevices();
     return new OutputResult<>(null);
   }
 }

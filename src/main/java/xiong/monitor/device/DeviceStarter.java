@@ -16,14 +16,10 @@ import java.util.List;
 public class DeviceStarter implements ApplicationRunner {
 
     @Autowired
-    private DeviceMapper deviceMapper;
-
-    @Autowired
     private DeviceCmd deviceCmd;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<Device> devices = deviceMapper.selectList(new QueryWrapper<>());
-        devices.forEach(device -> deviceCmd.addDevice(device.getDeviceId()));
+        deviceCmd.updateDevices();
     }
 }

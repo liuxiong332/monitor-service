@@ -1,0 +1,1 @@
+INSERT INTO monitor_user (name, email, password) VALUES ('l@x', 'test@test', '4QrcOUm6Wau+VuBX8g+IPg==');

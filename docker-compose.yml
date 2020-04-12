@@ -20,6 +20,8 @@ services:
         image: mysql
         command: --default-authentication-plugin=mysql_native_password
         restart: always
+        volumes: 
+            - mysql-data:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: 12345678
             MYSQL_DATABASE: monitor_service
@@ -28,9 +30,9 @@ services:
         build: 
             context: ./webapp
             args:
-                REACT_APP_SERVICE_HOST: monitor-service
+                REACT_APP_SERVICE_HOST: localhost
                 REACT_APP_SERVICE_PORT: 8080
-                REACT_APP_MINIO_HOST: minio1
+                REACT_APP_MINIO_HOST: localhost
                 REACT_APP_MINIO_PORT: 9000
         ports: 
         - "80:80"
@@ -72,7 +74,20 @@ services:
             interval: 30s
             timeout: 20s
             retries: 3
+    minio-init:
+        image: minio/mc
+        depends_on:
+            - minio1
+        restart: on-failure
+        entrypoint: >
+            /bin/sh -c "
+            /usr/bin/mc config host add myminio http://minio1:9000 minio minio123;
+            /usr/bin/mc mb --ignore-existing myminio/pictures;
+            /usr/bin/mc policy set public myminio/pictures;
+            exit 0;
+            "
 volumes:
+    mysql-data:
     data1-1:
     data1-2:
     data2-1:
