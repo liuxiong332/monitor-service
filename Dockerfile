@@ -20,5 +20,6 @@ WORKDIR /usr/app/
 EXPOSE 8080/udp
 
 ENV MYSQL_HOST=localhost MYSQL_PORT=3306 REDIS_HOST=localhost REDIS_PORT=6379
+ENV DETECT_SERVICE_HOST=12.168.1.161 DETECT_SERVICE_PORT=8004
 ENV VIDEO_OUTPUT_PATH=/home/xiong.liu/object-detection/nginx/data/videos
 ENTRYPOINT ["java","-jar","monitor.jar"]
