@@ -20,6 +20,10 @@ public class DeviceStarter implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        deviceCmd.updateDevices();
+        try {
+            deviceCmd.updateDevices();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 }
