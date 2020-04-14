@@ -5,6 +5,6 @@ export default new Minio.Client({
     endPoint: MinioDomain,
     port: MinioPort,
     useSSL: false,
-    accessKey: 'minioadmin',
-    secretKey: 'minioadmin'
+    accessKey: process.env.REACT_APP_MINIO_ACCESS_KEY || 'minioadmin',
+    secretKey: process.env.REACT_APP_MINIO_SECRET_KEY || 'minioadmin'
 });

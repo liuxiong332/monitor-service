@@ -30,12 +30,14 @@ services:
         build: 
             context: ./webapp
             args:
-                REACT_APP_SERVICE_HOST: localhost
+                REACT_APP_SERVICE_HOST: ${MONITOR_HOST:-localhost} 
                 REACT_APP_SERVICE_PORT: 8080
-                REACT_APP_MINIO_HOST: localhost
+                REACT_APP_MINIO_HOST: ${MINIO_HOST:-localhost}
                 REACT_APP_MINIO_PORT: 9000
+                REACT_APP_MINIO_ACCESS_KEY: minio
+                REACT_APP_MINIO_SECRET_KEY: minio123
         ports: 
-        - "80:80"
+        - "${WEB_PORT:-80}:80"
         depends_on:
         - monitor-service
         restart: always
