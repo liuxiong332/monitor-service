@@ -75,17 +75,15 @@ services:
             timeout: 20s
             retries: 3
     minio-init:
-        image: minio/mc
+        build: ./minio-init
         depends_on:
             - minio1
         restart: on-failure
-        entrypoint: >
-            /bin/sh -c "
-            /usr/bin/mc config host add myminio http://minio1:9000 minio minio123;
-            /usr/bin/mc mb --ignore-existing myminio/pictures;
-            /usr/bin/mc policy set public myminio/pictures;
-            exit 0;
-            "
+        environment:
+            MINIO_HOST: minio1
+            MINIO_PORT: 9000
+            MINIO_ACCESS_KEY: minio
+            MINIO_SECRET_KEY: minio123
 volumes:
     mysql-data:
     data1-1:
