@@ -44,10 +44,10 @@ public class DeviceCmd {
     httpHeaders.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<DeviceInfo> httpEntity = new HttpEntity<>(deviceInfo, httpHeaders);
 
-    String url = String.format("http://%s:%d/api/ds/deploy", detectServiceHost, detectServicePort);
-    ResponseEntity<Object> responseEntity =
-        restTemplate.exchange(url, HttpMethod.POST, httpEntity, Object.class);
-    System.out.println("Update the device info to remote service with " + deviceInfo);
-    System.out.println("Remote service response with " + responseEntity.getBody());
+    //String url = String.format("http://%s:%d/api/ds/deploy", detectServiceHost, detectServicePort);
+    //ResponseEntity<Object> responseEntity =
+    //    restTemplate.exchange(url, HttpMethod.POST, httpEntity, Object.class);
+    //System.out.println("Update the device info to remote service with " + deviceInfo);
+    //System.out.println("Remote service response with " + responseEntity.getBody());
   }
 }
