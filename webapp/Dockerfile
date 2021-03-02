@@ -7,7 +7,8 @@ WORKDIR /app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 # install app dependencies including 'devDependencies'
-RUN npm install -g cnpm --registry=https://registry.npm.taobao.org && cnpm install
+# RUN npm install -g cnpm --registry=https://registry.npm.taobao.org && cnpm install
+RUN npm install
 
 VOLUME [ "/app/node_modules" ]
 
