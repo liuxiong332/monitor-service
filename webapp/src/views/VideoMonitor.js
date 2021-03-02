@@ -61,6 +61,12 @@ function MyVideo(props) {
     player.current.height(props.height);
   }, [props.width, props.height]);
 
+  const VIDEOS = [
+    `http://12.168.1.152:8080/live/files/10.mp4`, 
+    `http://12.168.1.152:8080/live/files/12.mp4`,
+    `http://12.168.1.152:8080/live/files/14.mp4`,
+    `http://12.168.1.152:8080/live/files/16.mp4`,
+  ]
   return (
     <video-js
       id={"video" + props.deviceId}
@@ -71,9 +77,13 @@ function MyVideo(props) {
         src="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
         type="application/x-mpegURL"
       /> */}
-      <source
-        src={`http://12.168.1.161/live/${props.deviceId}/live.m3u8`}
+      {/* <source
+        src={`http://12.168.1.152:8080/live/10.mp4`}
         type="application/x-mpegURL"
+      /> */}
+      <source
+        src={VIDEOS[props.deviceId % 4]}
+        type="video/mp4"
       />
     </video-js>
   );

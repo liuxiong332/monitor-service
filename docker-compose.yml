@@ -34,9 +34,9 @@ services:
         build: 
             context: ./webapp
             args:
-                REACT_APP_SERVICE_HOST: ${MONITOR_HOST:-localhost} 
+                REACT_APP_SERVICE_HOST: 12.168.1.152
                 REACT_APP_SERVICE_PORT: 8088
-                REACT_APP_MINIO_HOST: ${MINIO_HOST:-localhost}
+                REACT_APP_MINIO_HOST: 12.168.1.152
                 REACT_APP_MINIO_PORT: 9000
                 REACT_APP_MINIO_ACCESS_KEY: minio
                 REACT_APP_MINIO_SECRET_KEY: minio123
