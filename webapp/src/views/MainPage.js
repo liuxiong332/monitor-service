@@ -4,6 +4,7 @@ import { useHistory, Switch, Route } from "react-router-dom";
 import LeftNavBar from "./LeftNavBar";
 import DeviceManager from "./DeviceManager";
 import VideoMonitor from "./VideoMonitor";
+import ModelsEditPage from "./ModelsEditPage";
 import ResizeView from "./ResizeView";
 import PictureShower from "./PictureShower";
 
@@ -47,6 +48,9 @@ export default function MainPage() {
           <Switch>
             <Route exact path="/">
               <VideoMonitor />
+            </Route>
+            <Route exact path="/models">
+              <ModelsEditPage />
             </Route>
             <Route exact path="/monitor">
               <VideoMonitor />

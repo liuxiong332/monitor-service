@@ -42,6 +42,10 @@ export default function LeftNavBar() {
         <PieChartOutlined />
         <span>实时监控</span>
       </Menu.Item>
+      <Menu.Item key="/models">
+        <DesktopOutlined />
+        <span>模型管理</span>
+      </Menu.Item>
       <Menu.Item key="/device">
         <DesktopOutlined />
         <span>设备管理</span>

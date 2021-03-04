@@ -133,3 +133,9 @@
 .picture-tab-header .ant-picker {
   margin-bottom: 16px;
 }
+
+.edit-page .button-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
