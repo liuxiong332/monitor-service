@@ -6,7 +6,7 @@ import DeviceManager from "./DeviceManager";
 import VideoMonitor from "./VideoMonitor";
 import ModelsEditPage from "./ModelsEditPage";
 import ResizeView from "./ResizeView";
-import PictureShower from "./PictureShower";
+import HistoryWatch from "./HistoryWatch";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -59,7 +59,7 @@ export default function MainPage() {
               <DeviceManager />
             </Route>
             <Route exact path="/history">
-              <PictureShower />
+              <HistoryWatch />
             </Route>
           </Switch>
         </Content>

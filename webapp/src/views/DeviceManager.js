@@ -6,29 +6,41 @@ const { Title } = Typography;
 
 const columns = [
   {
-    title: "设备名称",
+    title: "名称",
     dataIndex: "name",
     key: "name"
   },
+  // {
+  //   title: "设备密码",
+  //   dataIndex: "password",
+  //   key: "password"
+  // },
   {
-    title: "设备密码",
-    dataIndex: "password",
-    key: "password"
-  },
-  {
-    title: "设备服务",
+    title: "路径",
     dataIndex: "serviceUrl",
     key: "serviceUrl"
   },
+  // {
+  //   title: "网点",
+  //   dataIndex: "location",
+  //   key: "location"
+  // },
   {
-    title: "网点",
+    title: "场景",
+    dataIndex: "deviceType",
+    key: "deviceType",
+    render: () => "安全帽识别"
+  },
+  {
+    title: "位置",
     dataIndex: "location",
     key: "location"
   },
   {
-    title: "类型",
-    dataIndex: "deviceType",
-    key: "deviceType"
+    title: "状态",
+    dataIndex: "status",
+    key: "status",
+    render: () => "打开"
   },
   {
     title: "Action",

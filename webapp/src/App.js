@@ -12,9 +12,16 @@ import {
   Link,
   useHistory
 } from "react-router-dom";
+import { ConfigProvider } from "antd";
+import zhCN from 'antd/lib/locale/zh_CN';
+import moment from 'moment';
+import 'moment/locale/zh-cn'
+
+moment.locale('zh-CN');
 
 function MyApp() {
   return (
+    <ConfigProvider locale={zhCN}>
     <Router>
       <Switch>
         <Route path="/login">
@@ -28,6 +35,7 @@ function MyApp() {
         </Route>
       </Switch>
     </Router>
+    </ConfigProvider>
   );
 }
 

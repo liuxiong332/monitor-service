@@ -8,7 +8,7 @@ import React, {
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "@videojs/http-streaming";
-import { Tabs } from "antd";
+import { Tabs, Space } from "antd";
 import { request } from "../common";
 import ResizeView from "./ResizeView";
 
@@ -21,7 +21,7 @@ export function AllMonitor(props) {
   }
 
   return (
-    <Tabs defaultActiveKey="all" onChange={callback}>
+    <Tabs className="device-tabs" defaultActiveKey="all" onChange={callback}>
       <TabPane style={{ width: 120 }} tab="所有网点" key="all"></TabPane>
       {props.devices.map(device => (
         <TabPane
@@ -121,6 +121,8 @@ export function MultiVideoMonitor(props) {
     return (
       <Suspense>
         <div className="device-content">
+          {devices[0] && <div style={{margin: "0 0 10px 0"}}>{devices[0].name}正在进行安全帽识别监控</div>}
+          
           <div className="device-row">
             <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />
           </div>
