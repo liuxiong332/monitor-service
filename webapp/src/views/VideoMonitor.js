@@ -62,7 +62,7 @@ function MyVideo(props) {
   }, [props.width, props.height]);
 
   const VIDEOS = [
-    `http://12.168.1.152:8080/live/files/10.mp4`, 
+    `http://12.168.1.152:8080/live/files/live00000.mp4`, 
     `http://12.168.1.152:8080/live/files/12.mp4`,
     `http://12.168.1.152:8080/live/files/14.mp4`,
     `http://12.168.1.152:8080/live/files/16.mp4`,
@@ -82,7 +82,7 @@ function MyVideo(props) {
         type="application/x-mpegURL"
       /> */}
       <source
-        src={VIDEOS[props.deviceId % 4]}
+        src={VIDEOS[(props.deviceId - 1) % 4]}
         type="video/mp4"
       />
     </video-js>
@@ -121,7 +121,7 @@ export function MultiVideoMonitor(props) {
     return (
       <Suspense>
         <div className="device-content">
-          {devices[0] && <div style={{margin: "0 0 10px 0"}}>{devices[0].name}正在进行安全帽识别监控</div>}
+          {devices[0] && <div style={{margin: "0 0 10px 0"}}>{devices[0].name}正在进行监控</div>}
           
           <div className="device-row">
             <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />

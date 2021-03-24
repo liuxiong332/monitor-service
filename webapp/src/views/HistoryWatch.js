@@ -26,7 +26,7 @@ const dataSource = [
     time: "2021-03-06 12:00",
     duration: "1分钟",
     black: "否",
-    image: "http://image.uc.cn/s/wemedia/s/upload/2019/ccd330e4a1ef6e04e1cf0aac08f0ec90.jpg",
+    image: "http://12.168.1.152:9000/pictures/1451440462151_000.jpg",
   },
   {
     key: '3',
@@ -37,7 +37,7 @@ const dataSource = [
     time: "2021-03-06 12:00",
     duration: "2分钟",
     black: "否",
-    image: "http://img.yao51.com/jiankangtuku/epdidfdgz.jpeg",
+    image: "https://seopic.699pic.com/photo/50136/0049.jpg_wh1200.jpg",
   },
   {
     key: '4',
@@ -48,7 +48,7 @@ const dataSource = [
     time: "2021-03-07 12:00",
     duration: "30秒",
     black: "否",
-    image: "http://img.yao51.com/jiankangtuku/epdidfdgz.jpeg",
+    image: "https://img9.kcimg.cn/imga/0/677/677370.jpg!1201",
   },
   {
     key: '5',
@@ -62,16 +62,30 @@ const dataSource = [
     speed: "60",
     card: "A34212",
     black: "否",
+    image: "https://exp-picture.cdn.bcebos.com/e57a258602214f5749829a08732064fb970b7368.jpg",
+  },
+  {
+    key: '6',
+    number: '京A1233222',
+    name: '王五',
+    belong: "D部门",
+    type: "调度室值守",
+    position: "北门煤矿",
+    time: "2021-03-10 12:00",
+    duration: "2分钟",
+    speed: "60",
+    card: "A34212",
+    black: "否",
     image: "http://img.yao51.com/jiankangtuku/epdidfdgz.jpeg",
   },
 ];
 
 const columns = [
-  {
-    title: "车牌号",
-    dataIndex: "number",
-    key: "number"
-  },
+  // {
+  //   title: "车牌号",
+  //   dataIndex: "number",
+  //   key: "number"
+  // },
   {
     title: "司机名字",
     dataIndex: "name",
@@ -102,16 +116,16 @@ const columns = [
     dataIndex: "duration",
     key: "duration"
   },
-  {
-    title: "车速",
-    dataIndex: "speed",
-    key: "speed"
-  },
-  {
-    title: "驾驶证照",
-    dataIndex: "card",
-    key: "card"
-  },
+  // {
+  //   title: "车速",
+  //   dataIndex: "speed",
+  //   key: "speed"
+  // },
+  // {
+  //   title: "驾驶证照",
+  //   dataIndex: "card",
+  //   key: "card"
+  // },
   {
     title: "司机黑名单",
     dataIndex: "black",

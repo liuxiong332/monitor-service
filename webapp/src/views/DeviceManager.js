@@ -4,6 +4,12 @@ import { request } from "../common";
 
 const { Title } = Typography;
 
+const deviceTypeMap = {
+  1: "未戴安全帽检测",
+  2: "离岗检测",
+  3: "车辆入侵检测",
+  4: "驾驶员接打电话检测",
+}
 const columns = [
   {
     title: "名称",
@@ -15,11 +21,11 @@ const columns = [
   //   dataIndex: "password",
   //   key: "password"
   // },
-  {
-    title: "路径",
-    dataIndex: "serviceUrl",
-    key: "serviceUrl"
-  },
+  // {
+  //   title: "路径",
+  //   dataIndex: "serviceUrl",
+  //   key: "serviceUrl"
+  // },
   // {
   //   title: "网点",
   //   dataIndex: "location",
@@ -29,7 +35,7 @@ const columns = [
     title: "场景",
     dataIndex: "deviceType",
     key: "deviceType",
-    render: () => "安全帽识别"
+    render: (value) => deviceTypeMap[value]
   },
   {
     title: "位置",
