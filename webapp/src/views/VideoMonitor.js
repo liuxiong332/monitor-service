@@ -64,8 +64,8 @@ function MyVideo(props) {
   const VIDEOS = [
     `http://12.168.1.152:8080/live/files/live00000.mp4`, 
     `http://12.168.1.152:8080/live/files/12.mp4`,
-    `http://12.168.1.152:8080/live/files/14.mp4`,
-    `http://12.168.1.152:8080/live/files/16.mp4`,
+    `http://12.168.1.152:8080/live/files/enter.mp4`,
+    `http://12.168.1.152:8080/live/files/makecall.mp4`,
   ]
   return (
     <video-js
