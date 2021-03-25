@@ -8,12 +8,13 @@ import React, {
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "@videojs/http-streaming";
-import { Table, Space, Row, Col, Typography, Drawer, Button, Modal, Form, Input, Upload, FormInstance } from "antd";
+import { Table, Space, Row, Col, Typography, Drawer, Button, Modal, Form, Input, Upload, Select } from "antd";
 import { request } from "../common";
 import ResizeView from "./ResizeView";
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const sceneDataSource = [
   {
@@ -71,7 +72,7 @@ const dataSource = [
   },
 ];
 
-const columns = [
+const modelColumns = [
   {
     title: '模型名字',
     dataIndex: 'name',
@@ -85,7 +86,7 @@ const columns = [
   {
     title: '所属场景',
     dataIndex: 'scene',
-    key: 'description',
+    key: 'sceneId',
   },
   {
     title: '操作',
@@ -106,39 +107,53 @@ export function SceneEditPage() {
   const [sceneSources, setSceneSources] = useState(sceneDataSource);
   const [editSource, setEditSource] = useState(null);
 
+  useEffect(() => {
+    handleRefresh()
+  }, []);
+
+  const handleRefresh = () => {
+    request(`/scenes`).then(items => {
+      setSceneSources(items);
+    });
+  }
+
   const showSceneModal = () => {
     setIsSceneModalVisible(true);
   };
 
-  const handleSceneOk = (values) => {
+  const handleSceneOk = async (values) => {
     setIsSceneModalVisible(false);
-    if (values.name != null && values.description != null) {
-      setSceneSources([...sceneSources, { name: values.name, description: values.description }])
+    if (values.name != null && values.description != null && values.sceneId == null) {
+      await request("/scenes", { method: "POST", body: { name: values.name, description: values.description } });
+    } else if (values.name != null && values.description != null) {
+      await request(`/scenes/${values.sceneId}`, { method: "PUT", body: { name: values.name, description: values.description } });
     }
+    handleRefresh();
   };
 
   const handleSceneCancel = () => {
     setIsSceneModalVisible(false);
   };
-  
-  const handleEdit = (record) => {
+
+  const handleTryEdit = (record) => {
+    console.log("Will edit record ", record)
     setEditSource(record);
     setIsSceneModalVisible(true);
   };
 
-  const handleRemove = (recordId) => {
-    const index = sceneSources.findIndex(item => item.key === recordId)
-    if (index !== -1) setSceneSources([...sceneSources.slice(0, index), ...sceneSources.slice(index + 1)]);
+  const handleRemove = async (recordId) => {
+    await request(`/scenes/${recordId}`, { method: "DELETE" })
+    handleRefresh()
   };
 
   const columns = [
-    ...sceneColumns.slice(0, sceneColumns.length - 1), 
+    ...sceneColumns.slice(0, sceneColumns.length - 1),
     {
       ...sceneColumns[sceneColumns.length - 1],
       render: (text, record) => (
         <Space size="middle">
-          <a onClick={}>编辑</a>
-          {record.key !== '1' && <a>删除</a>}
+          <a onClick={() => handleTryEdit(record)}>编辑</a>
+          {<a onClick={() => handleRemove(record.sceneId)}>删除</a>}
         </Space>
       ),
     }
@@ -151,8 +166,9 @@ export function SceneEditPage() {
         <Button type="primary" onClick={showSceneModal} style={{ margin: "16px 0" }}>新增场景</Button>
         <Table
           dataSource={sceneSources}
-          columns={sceneColumns}
+          columns={columns}
           pagination={false}
+          dataIndex="sceneId"
         />
       </div>
       {isSceneModalVisible && (
@@ -163,7 +179,7 @@ export function SceneEditPage() {
           visible={true}
           bodyStyle={{ paddingBottom: 80 }}
         >
-          <SceneEdit onOK={handleSceneOk} editSource={editSource}/>
+          <SceneEdit onOK={handleSceneOk} editSource={editSource} />
         </Drawer>
       )}
     </>
@@ -174,25 +190,79 @@ export function ModelsOnlyEditPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [sources, setSources] = useState(dataSource);
-  
+  const [editSource, setEditSource] = useState(null);
+
+  const [sceneSources, setSceneSources] = useState([]);
+
+  useEffect(() => {
+    handleRefresh()
+
+    request(`/scenes`).then(items => {
+      setSceneSources(items);
+    });
+  }, []);
+
+  const handleRefresh = () => {
+    request(`/models`).then(items => {
+      setSources(items);
+    });
+  }
+
   const showModal = () => {
+    setEditSource(null);
     setIsModalVisible(true);
   };
 
-  const handleOk = (values) => {
+  const handleOk = async (values) => {
     setIsModalVisible(false);
-    if (values.name != null && values.description != null) {
-      setSources([...sources, { name: values.name, description: values.description }])
+    if (values.name != null && values.description != null && values.id == null) {
+      await request("/models", { method: "POST", body: { name: values.name, description: values.description, sceneId: values.sceneId } });
+    } else if (values.name != null && values.description != null) {
+      await request(`/models/${values.id}`, { method: "PUT", body: { name: values.name, description: values.description, sceneId: values.sceneId } });
     }
+    handleRefresh()
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
+  const handleTryEdit = (record) => {
+    console.log("Will edit record ", record)
+    setEditSource(record);
+    setIsModalVisible(true);
+  };
+
+  const handleRemove = async (recordId) => {
+    await request(`/models/${recordId}`, { method: "DELETE" })
+    handleRefresh()
+  };
+
+  const columns = [
+    ...modelColumns.slice(0, modelColumns.length - 2),
+    {
+      ...sceneColumns[sceneColumns.length - 2],
+      render: (text, record) => {
+        console.log("edit source:", sceneSources, record)
+        if (sceneSources == null) return "";
+        let item = sceneSources.find(item => item.sceneId === record.sceneId)
+        if (item != null) return item.name;
+        return "";
+      }
+    },
+    {
+      ...modelColumns[modelColumns.length - 1],
+      render: (text, record) => (
+        <Space size="middle">
+          <a onClick={() => handleTryEdit(record)}>编辑</a>
+          {<a onClick={() => handleRemove(record.id)}>删除</a>}
+        </Space>
+      ),
+    }
+  ];
+
   return (
     <>
-      
       <div style={{ margin: "10px 10px" }}>
         <Title>模型信息</Title>
         <Button type="primary" onClick={showModal} style={{ margin: "16px 0" }}>新增模型</Button>
@@ -210,7 +280,7 @@ export function ModelsOnlyEditPage() {
           visible={true}
           bodyStyle={{ paddingBottom: 80 }}
         >
-          <ModelEdit onOK={handleOk}/>
+          <ModelEdit onOK={handleOk} editSource={editSource} sceneSources={sceneSources}/>
         </Drawer>
       )}
     </>
@@ -218,7 +288,7 @@ export function ModelsOnlyEditPage() {
 }
 
 export default function ModelsEditPage() {
-  
+
   return (
     <>
       <SceneEditPage />
@@ -241,7 +311,7 @@ const tailLayout = {
 
 export function SceneEdit(props) {
   const onFinish = values => {
-    props.onOK(values)
+    props.onOK({ ...props.editSource, ...values })
     console.log("Success:", values);
   };
 
@@ -284,7 +354,7 @@ export function SceneEdit(props) {
 
 export function ModelEdit(props) {
   const onFinish = values => {
-    props.onOK(values)
+    props.onOK({ ...props.editSource, ...values })
     console.log("Success:", values);
   };
 
@@ -303,7 +373,7 @@ export function ModelEdit(props) {
     <Form
       {...layout}
       name="basic"
-      initialValues={{ remember: true }}
+      initialValues={props.editSource}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
@@ -321,6 +391,19 @@ export function ModelEdit(props) {
         rules={[{ required: true, message: '请输入模型描述' }]}
       >
         <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="场景"
+        name="sceneId"
+        rules={[{ required: true, message: '请选择场景' }]}
+      >
+        <Select
+          placeholder="选择一个场景"
+          allowClear
+        >
+          {props.sceneSources.map(item => <Option key={item.sceneId} value={item.sceneId}>{item.name}</Option>)}
+        </Select>
       </Form.Item>
 
       <Form.Item

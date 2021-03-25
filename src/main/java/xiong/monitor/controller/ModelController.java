@@ -41,7 +41,7 @@ class ModelController {
   @PutMapping("/models/{id}")
   OutputResult<Object> updateModel(@RequestBody AIModel device, @PathVariable Long id) {
     logger.info("Will update device " + device.toString());
-    device.setSceneId(id);
+    device.setId(id);
     modelMapper.updateById(device);
     return new OutputResult<>(null);
   }
