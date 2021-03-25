@@ -1,0 +1,1 @@
+INSERT INTO monitor_model (name, description, scene_id) VALUES ('默认安全帽模型', '识别安全帽', 1);
