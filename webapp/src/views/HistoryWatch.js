@@ -11,44 +11,44 @@ const dataSource = [
     name: '张三',
     belong: "A部门",
     type: "安全帽识别",
-    position: "东门煤矿",
+    position: "机修车间",
     time: "2021-03-05 12:00",
     duration: "5分钟",
     black: "否",
-    image: "http://img.lanimg.com/tuku/yulantu/120907/219077-120ZG9411550.jpg",
+    image: "http://12.168.1.152:9000/pictures/hat1.png",
   },
   {
     key: '2',
     name: '李四',
     belong: "B部门",
     type: "安全帽识别",
-    position: "东门煤矿",
+    position: "机修车间",
     time: "2021-03-06 12:00",
     duration: "1分钟",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/1451440462151_000.jpg",
+    image: "http://12.168.1.152:9000/pictures/hat2.png",
   },
   {
     key: '3',
     name: '王五',
     belong: "C部门",
     type: "安全帽识别",
-    position: "西门煤矿",
+    position: "机修车间",
     time: "2021-03-06 12:00",
     duration: "2分钟",
     black: "否",
-    image: "https://seopic.699pic.com/photo/50136/0049.jpg_wh1200.jpg",
+    image: "http://12.168.1.152:9000/pictures/hat3.png",
   },
   {
     key: '4',
     name: '王五',
     belong: "C部门",
     type: "车辆入侵",
-    position: "南门煤矿",
+    position: "机修车间门口",
     time: "2021-03-07 12:00",
     duration: "30秒",
     black: "否",
-    image: "https://img9.kcimg.cn/imga/0/677/677370.jpg!1201",
+    image: "http://12.168.1.152:9000/pictures/car.png",
   },
   {
     key: '5',
@@ -56,13 +56,13 @@ const dataSource = [
     name: '王五',
     belong: "C部门",
     type: "接打电话",
-    position: "北门煤矿",
+    position: "工程车辆驾驶室",
     time: "2021-03-10 12:00",
     duration: "2分钟",
     speed: "60",
     card: "A34212",
     black: "否",
-    image: "https://exp-picture.cdn.bcebos.com/e57a258602214f5749829a08732064fb970b7368.jpg",
+    image: "http://12.168.1.152:9000/pictures/call.png",
   },
   {
     key: '6',
@@ -70,13 +70,13 @@ const dataSource = [
     name: '王五',
     belong: "D部门",
     type: "调度室值守",
-    position: "北门煤矿",
+    position: "调度室",
     time: "2021-03-10 12:00",
     duration: "2分钟",
     speed: "60",
     card: "A34212",
     black: "否",
-    image: "http://img.yao51.com/jiankangtuku/epdidfdgz.jpeg",
+    image: "http://12.168.1.152:9000/pictures/work.png",
   },
 ];
 
@@ -86,11 +86,11 @@ const columns = [
   //   dataIndex: "number",
   //   key: "number"
   // },
-  {
-    title: "司机名字",
-    dataIndex: "name",
-    key: "name"
-  },
+  // {
+  //   title: "司机名字",
+  //   dataIndex: "name",
+  //   key: "name"
+  // },
   {
     title: "所属机构",
     dataIndex: "belong",
@@ -126,11 +126,11 @@ const columns = [
   //   dataIndex: "card",
   //   key: "card"
   // },
-  {
-    title: "司机黑名单",
-    dataIndex: "black",
-    key: "black"
-  },
+  // {
+  //   title: "司机黑名单",
+  //   dataIndex: "black",
+  //   key: "black"
+  // },
   {
     title: "浏览",
     dataIndex: "",
