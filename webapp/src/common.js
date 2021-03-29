@@ -1,10 +1,11 @@
-const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || "12.168.1.152";
+const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || "10.168.1.152";
 const SERVICE_PORT = process.env.REACT_APP_SERVICE_PORT || 8088;
 
-const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || "12.168.1.152";
+const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || "10.168.1.152";
 const MINIO_PORT = Number(process.env.REACT_APP_MINIO_PORT || 9000);
 
 export const Domain = `http://${SERVICE_HOST}:${SERVICE_PORT}`;
+export const VideoDomain = `http://${SERVICE_HOST}:${SERVICE_PORT}`;
 export const MinioDomain = MINIO_HOST;
 export const MinioPort = MINIO_PORT;
 

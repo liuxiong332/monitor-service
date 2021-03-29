@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Table, Button, Typography, Form, Input, Drawer, Image, Checkbox, Space, DatePicker } from "antd";
-import { request } from "../common";
+import { MinioDomain, MinioPort } from "../common";
 import moment from 'moment';
 
 const { Title } = Typography;
@@ -15,7 +15,7 @@ const dataSource = [
     time: "2021-03-05 12:00",
     duration: "5分钟",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/hat1.png",
+    image: `http://${MinioDomain}:${MinioPort}/pictures/hat1.png`,
   },
   {
     key: '2',
@@ -26,7 +26,7 @@ const dataSource = [
     time: "2021-03-06 12:00",
     duration: "1分钟",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/hat2.png",
+    image: `http://${MinioDomain}:${MinioPort}/pictures/hat2.png`,
   },
   {
     key: '3',
@@ -37,7 +37,7 @@ const dataSource = [
     time: "2021-03-06 12:00",
     duration: "2分钟",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/hat3.png",
+    image: `http://${MinioDomain}:${MinioPort}/pictures/hat3.png`,
   },
   {
     key: '4',
@@ -48,7 +48,7 @@ const dataSource = [
     time: "2021-03-07 12:00",
     duration: "30秒",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/car.png",
+    image: `http://${MinioDomain}:${MinioPort}/pictures/car.png`,
   },
   {
     key: '5',
@@ -62,7 +62,7 @@ const dataSource = [
     speed: "60",
     card: "A34212",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/call.png",
+    image: `http://${MinioDomain}:${MinioPort}/pictures/call.png`,
   },
   {
     key: '6',
@@ -76,7 +76,7 @@ const dataSource = [
     speed: "60",
     card: "A34212",
     black: "否",
-    image: "http://12.168.1.152:9000/pictures/work.png",
+    image: `http://${MinioDomain}:${MinioPort}/pictures/work.png`,
   },
 ];
 

@@ -9,7 +9,7 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "@videojs/http-streaming";
 import { Tabs, Space } from "antd";
-import { request } from "../common";
+import { request, VideoDomain } from "../common";
 import ResizeView from "./ResizeView";
 
 const { TabPane } = Tabs;
@@ -62,10 +62,10 @@ function MyVideo(props) {
   }, [props.width, props.height]);
 
   const VIDEOS = [
-    `http://12.168.1.152:8080/live/files/live00000.mp4`, 
-    `http://12.168.1.152:8080/live/files/work.mp4`,
-    `http://12.168.1.152:8080/live/files/enter.mp4`,
-    `http://12.168.1.152:8080/live/files/makecall.mp4`,
+    `${VideoDomain}/live/files/live00000.mp4`, 
+    `${VideoDomain}/live/files/work.mp4`,
+    `${VideoDomain}/live/files/enter.mp4`,
+    `${VideoDomain}/live/files/makecall.mp4`,
   ]
   return (
     <video-js
