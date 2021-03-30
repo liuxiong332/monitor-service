@@ -5,11 +5,11 @@
 
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:12.168.1.152}:${MYSQL_PORT:3306}/monitor_service?serverTimezone=UTC&useLegacyDatetimeCode=false
+    url: jdbc:mysql://${MYSQL_HOST:10.168.1.152}:${MYSQL_PORT:3306}/monitor_service?serverTimezone=UTC&useLegacyDatetimeCode=false
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:12345678}
   redis:
-    host: ${REDIS_HOST:12.168.1.152}
+    host: ${REDIS_HOST:10.168.1.152}
     port: ${REDIS_PORT:6379}
   mail:
     host: smtp.163.com

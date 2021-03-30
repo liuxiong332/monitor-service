@@ -19,7 +19,7 @@ function MyHeader() {
 
   return (
     <React.Fragment>
-      <span>智能安全监控系统</span>
+      <span>露天矿视频安全行为分析系统</span>
       <span className="exit-btn" onClick={onExit}>
         退出
       </span>

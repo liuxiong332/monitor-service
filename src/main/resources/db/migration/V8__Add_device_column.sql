@@ -1,0 +1,1 @@
+ALTER TABLE monitor_device ADD device_ip varchar(1024), ADD  path varchar(1024), ADD status int default 0;

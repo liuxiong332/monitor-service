@@ -18,13 +18,20 @@ public class Device {
       String password,
       String serviceUrl,
       Integer deviceType,
-      String location) {
+      String location,
+      String deviceIp,
+      String path,
+      Integer status
+  ) {
     this.deviceId = id;
     this.name = name;
     this.password = password;
     this.serviceUrl = serviceUrl;
     this.deviceType = deviceType;
     this.location = location;
+    this.deviceIp = deviceIp;
+    this.path = path;
+    this.status = status;
     this.createTime = new Date();
     this.updateTime = new Date();
   }
@@ -39,6 +46,10 @@ public class Device {
   private String serviceUrl;
   private Integer deviceType;
   private String location;
+
+  private String deviceIp;
+  private String path;
+  private Integer status;
 
   private Date createTime;
   private Date updateTime;

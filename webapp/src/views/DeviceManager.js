@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Table, Button, Typography, Form, Input, Drawer } from "antd";
+import { Table, Button, Typography, Form, Input, Drawer, Select } from "antd";
 import { request } from "../common";
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const deviceTypeMap = {
   1: "未戴安全帽检测",
@@ -10,6 +11,12 @@ const deviceTypeMap = {
   3: "车辆入侵检测",
   4: "驾驶员接打电话检测",
 }
+
+const statusMap = {
+  0: "打开",
+  1: "关闭",
+}
+
 const columns = [
   {
     title: "名称",
@@ -21,32 +28,32 @@ const columns = [
   //   dataIndex: "password",
   //   key: "password"
   // },
-  // {
-  //   title: "路径",
-  //   dataIndex: "serviceUrl",
-  //   key: "serviceUrl"
-  // },
-  // {
-  //   title: "网点",
-  //   dataIndex: "location",
-  //   key: "location"
-  // },
   {
-    title: "场景",
+    title: "设备IP",
+    dataIndex: "serviceUrl",
+    key: "serviceUrl"
+  },
+  {
+    title: "网点",
+    dataIndex: "location",
+    key: "location"
+  },
+  {
+    title: "应用场景",
     dataIndex: "deviceType",
     key: "deviceType",
     render: (value) => deviceTypeMap[value]
   },
   {
-    title: "位置",
-    dataIndex: "location",
-    key: "location"
+    title: "路径",
+    dataIndex: "path",
+    key: "path"
   },
   {
     title: "状态",
     dataIndex: "status",
     key: "status",
-    render: () => "打开"
+    render: (value) => statusMap[value]
   },
   {
     title: "Action",
@@ -67,6 +74,7 @@ export default function DeviceManager() {
   const handleRefresh = () => {
     setEditDevice(null);
     request(`/devices`).then(items => {
+      items = items.map(item => ({ ...item, status: item["status"].toString(), deviceType: item["deviceType"].toString() }))
       setDataSource(items);
     });
   };
@@ -158,15 +166,16 @@ const tailLayout = {
 export function DeviceEdit(props) {
   const onFinish = values => {
     console.log("Success:", values);
+    let device = {...values, status: parseInt(values["status"]), deviceType: parseInt(values["deviceType"])};
     if (props.editDevice.deviceId) {
       request(`/devices/${props.editDevice.deviceId}`, {
         method: "PUT",
-        body: values
+        body: device
       }).then(() => {
         props.onRefresh();
       });
     } else {
-      request(`/devices/`, { method: "POST", body: values }).then(() => {
+      request(`/devices/`, { method: "POST", body: device }).then(() => {
         props.onRefresh();
       });
     }
@@ -175,6 +184,7 @@ export function DeviceEdit(props) {
   const onFinishFailed = errorInfo => {
     console.log("Failed:", errorInfo);
   };
+  console.log("edit device ", props.editDevice)
   return (
     <Form
       {...layout}
@@ -186,17 +196,38 @@ export function DeviceEdit(props) {
       <Form.Item label="设备名称" name="name">
         <Input />
       </Form.Item>
-      <Form.Item label="设备密码" name="password">
+      <Form.Item label="设备IP" name="serviceUrl">
         <Input />
       </Form.Item>
-      <Form.Item label="设备服务" name="serviceUrl">
+      <Form.Item label="场景" name="deviceType">
+        <Select
+          placeholder="选择场景"
+        >
+          <Option value="1">未戴安全帽检测</Option>
+          <Option value="2">离岗检测</Option>
+          <Option value="3">车辆入侵检测</Option>
+          <Option value="4">驾驶员接打电话检测</Option>
+        </Select>
+      </Form.Item>
+      {/* <Form.Item label="设备密码" name="password">
+        <Input />
+      </Form.Item> */}
+
+      <Form.Item label="路径" name="path">
         <Input />
       </Form.Item>
-      <Form.Item label="类型" name="deviceType">
-        <Input />
-      </Form.Item>
+
       <Form.Item label="网点" name="location">
         <Input />
+      </Form.Item>
+
+      <Form.Item label="状态" name="status">
+        <Select
+          placeholder="选择状态"
+        >
+          <Option value="0">打开</Option>
+          <Option value="1">关闭</Option>
+        </Select>
       </Form.Item>
 
       <Form.Item {...tailLayout}>

@@ -119,6 +119,7 @@ export function SceneEditPage() {
 
   const showSceneModal = () => {
     setIsSceneModalVisible(true);
+    setEditSource(null)
   };
 
   const handleSceneOk = async (values) => {
@@ -173,7 +174,7 @@ export function SceneEditPage() {
       </div>
       {isSceneModalVisible && (
         <Drawer
-          title="新建场景"
+          title={editSource == null ? "新建场景" : "编辑场景"}
           width={500}
           onClose={handleSceneCancel}
           visible={true}
@@ -274,7 +275,7 @@ export function ModelsOnlyEditPage() {
       </div>
       {isModalVisible && (
         <Drawer
-          title="新建模型"
+          title={editSource == null ? "新建模型" : "编辑模型"}
           width={500}
           onClose={handleCancel}
           visible={true}
