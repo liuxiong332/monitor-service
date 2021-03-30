@@ -7,6 +7,7 @@ import VideoMonitor from "./VideoMonitor";
 import ModelsEditPage from "./ModelsEditPage";
 import ResizeView from "./ResizeView";
 import HistoryWatch from "./HistoryWatch";
+import SystemInfo from "./SystemInfo";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -60,6 +61,9 @@ export default function MainPage() {
             </Route>
             <Route exact path="/history">
               <HistoryWatch />
+            </Route>
+            <Route exact path="/system">
+              <SystemInfo />
             </Route>
           </Switch>
         </Content>

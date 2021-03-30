@@ -40,7 +40,7 @@ export default function LeftNavBar() {
     >
       <Menu.Item key="/monitor">
         <PieChartOutlined />
-        <span>实时监控</span>
+        <span>视频识别分析</span>
       </Menu.Item>
       <Menu.Item key="/models">
         <DesktopOutlined />
@@ -48,11 +48,11 @@ export default function LeftNavBar() {
       </Menu.Item>
       <Menu.Item key="/device">
         <DesktopOutlined />
-        <span>设备管理</span>
+        <span>参数配置</span>
       </Menu.Item>
       <Menu.Item key="/history">
         <ContainerOutlined />
-        <span>历史数据</span>
+        <span>信息展示</span>
       </Menu.Item>
       <Menu.Item key="/system">
         <MailOutlined />
