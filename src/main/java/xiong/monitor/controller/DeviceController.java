@@ -47,6 +47,7 @@ class DeviceController {
     logger.info("Will update device " + device.toString());
     device.setDeviceId(id);
     deviceMapper.updateById(device);
+    deviceCmd.updateDevices();
     return new OutputResult<>(null);
   }
 

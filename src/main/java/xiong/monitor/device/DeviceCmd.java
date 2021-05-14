@@ -1,13 +1,11 @@
 package xiong.monitor.device;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.ModelMap;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import xiong.monitor.entity.AIModel;
 import xiong.monitor.entity.Device;
@@ -15,6 +13,7 @@ import xiong.monitor.entity.Scene;
 import xiong.monitor.mapper.DeviceMapper;
 import xiong.monitor.mapper.ModelMapper;
 import xiong.monitor.mapper.SceneMapper;
+import xiong.monitor.util.ModelPaths;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +21,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class DeviceCmd {
+    private Logger logger = LoggerFactory.getLogger(DeviceCmd.class);
+
     private RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
@@ -55,10 +56,12 @@ public class DeviceCmd {
                     device.getServiceUrl(),
                     device.getPath(),
                     scene.map(Scene::getName).orElse(null),
-                    null
+                    model.flatMap(m -> Optional.ofNullable(m.getModelPath()).map(ModelPaths::getModelDir)).orElse(null)
                 );
             })
             .collect(Collectors.toList());
+
+        logger.info("Upload devices to {}", srcs);
         // DeviceInfo deviceInfo = new DeviceInfo(srcs, videoPath, 0);
 
         // HttpHeaders httpHeaders = new HttpHeaders();

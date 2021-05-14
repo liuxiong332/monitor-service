@@ -10,10 +10,9 @@ import xiong.monitor.entity.AIModel;
 import xiong.monitor.entity.Scene;
 import xiong.monitor.mapper.ModelMapper;
 import xiong.monitor.mapper.SceneMapper;
+import xiong.monitor.util.ModelPaths;
 import xiong.monitor.util.OutputResult;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,9 +72,7 @@ class ModelController {
 
   @PostMapping("/models/upload")
   OutputResult<Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("uploadPath") String uploadPath) throws IOException {
-    String userHomeDir = System.getProperty("user.home");
-
-    Path modelDir = Paths.get(userHomeDir, "models");
+    Path modelDir = ModelPaths.getModelsUploadDir();
     modelDir.toFile().mkdir();
 
     Path uploadDir = Paths.get(modelDir.toString(), uploadPath);
