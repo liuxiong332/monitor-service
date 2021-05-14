@@ -29,7 +29,7 @@ public class Device {
     this.serviceUrl = serviceUrl;
     this.deviceType = deviceType;
     this.location = location;
-    this.deviceIp = deviceIp;
+    // this.deviceIp = deviceIp;
     this.path = path;
     this.status = status;
     this.createTime = new Date();
@@ -43,12 +43,12 @@ public class Device {
 
   private String password;
 
-  private String serviceUrl;
-  private Integer deviceType;
-  private String location;
+  private String serviceUrl;  // 设备IP
+  private Integer deviceType;  // 场景信息
+  private String location;  // 摄像头所在的位置
 
-  private String deviceIp;
-  private String path;
+  // private String deviceIp;  // 设备IP
+  private String path;  // 视频路径
   private Integer status;
 
   private Date createTime;

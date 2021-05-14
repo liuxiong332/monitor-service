@@ -1,4 +1,4 @@
-const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || "10.168.1.152";
+const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || "localhost";
 const SERVICE_PORT = process.env.REACT_APP_SERVICE_PORT || 8088;
 
 const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || "10.168.1.152";
@@ -27,4 +27,8 @@ export async function request(path, { method, body, headers } = {}) {
     throw new ServerError(result.code, result.errMsg);
   }
   return result.data;
+}
+
+export function uploadUrl(uploadName) {
+  return Domain + `/models/upload?uploadPath=${uploadName}`;
 }

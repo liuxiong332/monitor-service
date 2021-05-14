@@ -8,9 +8,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 class DeviceSrc {
-  private Long index;
-  private String uri;
-  private Integer processType;
+  private Long deviceId;
+  private String deviceName;
+  private String deviceIP;
+  private String videoPath;
+  private String scene;
+  private String modelPath;
 }
 
 @Data

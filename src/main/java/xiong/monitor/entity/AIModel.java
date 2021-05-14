@@ -16,12 +16,14 @@ public class AIModel {
       Long id,
       String name,
       String description,
-      Long sceneId
+      Long sceneId,
+      String modelPath
   ) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.sceneId = sceneId;
+    this.modelPath = modelPath;
     this.createTime = new Date();
     this.updateTime = new Date();
   }
@@ -34,6 +36,8 @@ public class AIModel {
   private String description;
 
   private Long sceneId;
+
+  private String modelPath;
 
   private Date createTime;
   private Date updateTime;

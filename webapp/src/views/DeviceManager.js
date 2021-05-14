@@ -66,6 +66,11 @@ const columns = [
 export default function DeviceManager() {
   let [dataSource, setDataSource] = useState([]);
   let [editDevice, setEditDevice] = useState(null);
+  let [scenes, setScenes] = useState(null)
+
+  useEffect(() => {
+    request('/scenes').then(items => setScenes(items))
+  }, []);
 
   useEffect(() => {
     handleRefresh();
@@ -74,7 +79,7 @@ export default function DeviceManager() {
   const handleRefresh = () => {
     setEditDevice(null);
     request(`/devices`).then(items => {
-      items = items.map(item => ({ ...item, status: item["status"].toString(), deviceType: item["deviceType"].toString() }))
+      items = items.map(item => ({ ...item, status: item["status"].toString() }))
       setDataSource(items);
     });
   };
@@ -99,7 +104,18 @@ export default function DeviceManager() {
 
   const useColumns = useMemo(() => {
     return [
-      ...columns.slice(0, columns.length - 1),
+      ...columns.slice(0, 3),
+      {
+        title: "应用场景",
+        dataIndex: "deviceType",
+        key: "deviceType",
+        render: (value) => {
+          console.log("Now scenes", scenes)
+          let scene = scenes.find(scene => scene.sceneId === parseInt(value));
+          if (scene != null) { return scene.name; } else { return null; }
+        }
+      },
+      ...columns.slice(4, columns.length - 1),
       {
         title: "动作",
         dataIndex: "",
@@ -120,19 +136,19 @@ export default function DeviceManager() {
         )
       }
     ];
-  }, []);
+  }, [scenes]);
   return (
     <div style={{ margin: "10px 10px" }}>
       <Title>设备信息</Title>
       <Button onClick={handleAdd} type="primary" style={{ margin: "16px 0" }}>
         添加设备
       </Button>
-      <Table
+      {scenes != null && <Table
         rowKey="deviceId"
         dataSource={dataSource}
         pagination={false}
         columns={useColumns}
-      />
+      />}
       {editDevice && (
         <Drawer
           title={editDevice.deviceId ? "修改设备" : "创建新设备"}
@@ -141,7 +157,7 @@ export default function DeviceManager() {
           visible={true}
           bodyStyle={{ paddingBottom: 80 }}
         >
-          <DeviceEdit editDevice={editDevice} onRefresh={handleRefresh} />
+          <DeviceEdit editDevice={editDevice} scenes={scenes} onRefresh={handleRefresh} />
         </Drawer>
       )}
     </div>
@@ -164,6 +180,7 @@ const tailLayout = {
 };
 
 export function DeviceEdit(props) {
+  
   const onFinish = values => {
     console.log("Success:", values);
     let device = {...values, status: parseInt(values["status"]), deviceType: parseInt(values["deviceType"])};
@@ -201,12 +218,9 @@ export function DeviceEdit(props) {
       </Form.Item>
       <Form.Item label="场景" name="deviceType">
         <Select
-          placeholder="选择场景"
+          placeholder="选择场景" allowClear
         >
-          <Option value="1">未戴安全帽检测</Option>
-          <Option value="2">离岗检测</Option>
-          <Option value="3">车辆入侵检测</Option>
-          <Option value="4">驾驶员接打电话检测</Option>
+          {props.scenes.map(scene => <Option key={scene.sceneId} value={scene.sceneId}>{scene.name}</Option>)}
         </Select>
       </Form.Item>
       {/* <Form.Item label="设备密码" name="password">

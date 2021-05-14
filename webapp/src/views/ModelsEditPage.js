@@ -3,15 +3,19 @@ import React, {
   useEffect,
   useState,
   useCallback,
-  Suspense
+  Suspense,
+  useMemo,
+  useImperativeHandle,
+  forwardRef
 } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "@videojs/http-streaming";
 import { Table, Space, Row, Col, Typography, Drawer, Button, Modal, Form, Input, Upload, Select } from "antd";
-import { request } from "../common";
+import { request, uploadUrl } from "../common";
 import ResizeView from "./ResizeView";
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
+import { v4 as uuidv4 } from 'uuid';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -101,11 +105,12 @@ const modelColumns = [
   },
 ];
 
-export function SceneEditPage() {
+export function SceneEditPage(props, ref) {
   const [isSceneModalVisible, setIsSceneModalVisible] = useState(false);
 
   const [sceneSources, setSceneSources] = useState(sceneDataSource);
   const [editSource, setEditSource] = useState(null);
+  const [models, setModels] = useState(null);
 
   useEffect(() => {
     handleRefresh()
@@ -115,7 +120,12 @@ export function SceneEditPage() {
     request(`/scenes`).then(items => {
       setSceneSources(items);
     });
+    request('/models').then(items => setModels(items));
   }
+
+  useImperativeHandle(ref, () => ({
+    refresh: handleRefresh,
+  }));
 
   const showSceneModal = () => {
     setIsSceneModalVisible(true);
@@ -125,9 +135,9 @@ export function SceneEditPage() {
   const handleSceneOk = async (values) => {
     setIsSceneModalVisible(false);
     if (values.name != null && values.description != null && values.sceneId == null) {
-      await request("/scenes", { method: "POST", body: { name: values.name, description: values.description } });
+      await request("/scenes", { method: "POST", body: { name: values.name, description: values.description, modelId: values.modelId } });
     } else if (values.name != null && values.description != null) {
-      await request(`/scenes/${values.sceneId}`, { method: "PUT", body: { name: values.name, description: values.description } });
+      await request(`/scenes/${values.sceneId}`, { method: "PUT", body: { name: values.name, description: values.description, modelId: values.modelId } });
     }
     handleRefresh();
   };
@@ -138,6 +148,7 @@ export function SceneEditPage() {
 
   const handleTryEdit = (record) => {
     console.log("Will edit record ", record)
+    request('/models').then(items => setModels(items));
     setEditSource(record);
     setIsSceneModalVisible(true);
   };
@@ -147,30 +158,42 @@ export function SceneEditPage() {
     handleRefresh()
   };
 
-  const columns = [
-    ...sceneColumns.slice(0, sceneColumns.length - 1),
-    {
-      ...sceneColumns[sceneColumns.length - 1],
-      render: (text, record) => (
-        <Space size="middle">
-          <a onClick={() => handleTryEdit(record)}>编辑</a>
-          {<a onClick={() => handleRemove(record.sceneId)}>删除</a>}
-        </Space>
-      ),
-    }
-  ];
+  const columns = useMemo(() => (
+    [
+      ...sceneColumns.slice(0, sceneColumns.length - 1),
+      {
+        title: '默认模型',
+        dataIndex: 'modelId',
+        key: 'modelId',
+        render: (text, record) => {
+          if (models == null) return null;
+          let model = models.find(item => item.id === text);
+          if (model != null) { return model.name } else { return null }
+        },
+      },
+      {
+        ...sceneColumns[sceneColumns.length - 1],
+        render: (text, record) => (
+          <Space size="middle">
+            <a onClick={() => handleTryEdit(record)}>编辑</a>
+            {<a onClick={() => handleRemove(record.sceneId)}>删除</a>}
+          </Space>
+        ),
+      }
+    ]
+  ), [models]);
 
   return (
     <>
       <div style={{ margin: "10px 10px" }}>
         <Title>场景信息</Title>
         <Button type="primary" onClick={showSceneModal} style={{ margin: "16px 0" }}>新增场景</Button>
-        <Table
+        {models != null && <Table
           dataSource={sceneSources}
           columns={columns}
           pagination={false}
           dataIndex="sceneId"
-        />
+        />}
       </div>
       {isSceneModalVisible && (
         <Drawer
@@ -180,14 +203,14 @@ export function SceneEditPage() {
           visible={true}
           bodyStyle={{ paddingBottom: 80 }}
         >
-          <SceneEdit onOK={handleSceneOk} editSource={editSource} />
+          <SceneEdit onOK={handleSceneOk} editSource={editSource} models={models}/>
         </Drawer>
       )}
     </>
   );
 }
 
-export function ModelsOnlyEditPage() {
+export function ModelsOnlyEditPage(props) {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [sources, setSources] = useState(dataSource);
@@ -204,6 +227,7 @@ export function ModelsOnlyEditPage() {
   }, []);
 
   const handleRefresh = () => {
+    props.onRefresh()
     request(`/models`).then(items => {
       setSources(items);
     });
@@ -217,9 +241,9 @@ export function ModelsOnlyEditPage() {
   const handleOk = async (values) => {
     setIsModalVisible(false);
     if (values.name != null && values.description != null && values.id == null) {
-      await request("/models", { method: "POST", body: { name: values.name, description: values.description, sceneId: values.sceneId } });
+      await request("/models", { method: "POST", body: values });
     } else if (values.name != null && values.description != null) {
-      await request(`/models/${values.id}`, { method: "PUT", body: { name: values.name, description: values.description, sceneId: values.sceneId } });
+      await request(`/models/${values.id}`, { method: "PUT", body: values });
     }
     handleRefresh()
   };
@@ -288,12 +312,14 @@ export function ModelsOnlyEditPage() {
   );
 }
 
-export default function ModelsEditPage() {
+const SceneEditRefPage = forwardRef(SceneEditPage);
 
+export default function ModelsEditPage() {
+  const scenePageRef = useRef(null);
   return (
     <>
-      <SceneEditPage />
-      <ModelsOnlyEditPage />
+      <SceneEditRefPage ref={scenePageRef}/>
+      <ModelsOnlyEditPage onRefresh={() => scenePageRef.current.refresh()}/>
     </>
   );
 }
@@ -344,6 +370,20 @@ export function SceneEdit(props) {
         <Input />
       </Form.Item>
 
+      {props.editSource != null && <Form.Item
+        label="模型选择"
+        name="modelId"
+      >
+        <Select
+          placeholder="选择默认模型"
+          allowClear
+        >
+          {props.models.filter(d => d.sceneId === props.editSource.sceneId).map(item => 
+            <Option key={item.id} value={item.id}>{item.name}</Option>)
+          }
+        </Select>
+      </Form.Item>}
+
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit" className="login-form-button">
           保存
@@ -354,9 +394,21 @@ export function SceneEdit(props) {
 }
 
 export function ModelEdit(props) {
+  let uploadName = null;
+  if (props.editSource && props.editSource.modelPath) {
+    uploadName = props.editSource.modelPath;
+  } else {
+    uploadName = uuidv4();
+  }
+
   const onFinish = values => {
-    props.onOK({ ...props.editSource, ...values })
-    console.log("Success:", values);
+    let newProps = { ...props.editSource, ...values };
+    if (newProps.modelPath == null && values.upload && values.upload.length > 0) {
+      newProps.modelPath = uploadName;
+    }
+    delete newProps.upload
+    props.onOK(newProps);
+    console.log("Success:", values, newProps);
   };
 
   const onFinishFailed = errorInfo => {
@@ -370,6 +422,7 @@ export function ModelEdit(props) {
     }
     return e && e.fileList;
   };
+
   return (
     <Form
       {...layout}
@@ -412,9 +465,9 @@ export function ModelEdit(props) {
         label="模型文件"
         valuePropName="fileList"
         getValueFromEvent={normFile}
-        rules={[{ required: true, message: '请输入模型描述' }]}
+        rules={[{ required: false, message: '请输入模型描述' }]}
       >
-        <Upload name="file" action="/upload.do" listType="picture">
+        <Upload name="file" action={uploadUrl(uploadName)} listType="picture">
           <Button icon={<UploadOutlined />}>点击上传</Button>
         </Upload>
       </Form.Item>

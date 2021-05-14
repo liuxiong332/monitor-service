@@ -1,8 +1,6 @@
 package xiong.monitor.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,11 +13,13 @@ public class Scene {
   public Scene(
       Long id,
       String name,
-      String description
+      String description,
+      Long modelId
   ) {
     this.sceneId = id;
     this.name = name;
     this.description = description;
+    this.modelId = modelId;
     this.createTime = new Date();
     this.updateTime = new Date();
   }
@@ -30,6 +30,9 @@ public class Scene {
   private String name;
 
   private String description;
+
+  @TableField(updateStrategy=FieldStrategy.IGNORED)
+  private Long modelId;
 
   private Date createTime;
   private Date updateTime;
