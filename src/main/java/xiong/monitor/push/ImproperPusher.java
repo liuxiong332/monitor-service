@@ -120,15 +120,25 @@ public class ImproperPusher {
         sendEvent(transferPath);
     }
 
-    public void sendEvent(String localFilePath) throws Exception {
+    InputStream downloadFromPath(String remoteUrl) throws IOException {
+        HttpClient httpClient = HttpClients.createDefault();
+
+        HttpGet httpGet = new HttpGet(remoteUrl);
+
+        HttpResponse response = httpClient.execute(httpGet);
+
+        return response.getEntity().getContent();
+    }
+
+    public void sendEvent(String remotePath) throws Exception {
         Date currentDate = new Date();
         String eventId = genEventId(currentDate);
 
         ArrayList<String> fileNames = new ArrayList<>();
-        try (InputStream is = new FileInputStream(localFilePath)) {
-            logger.info("Will upload file {} to OBS", localFilePath);
+        try (InputStream is = downloadFromPath(remotePath)) {
+            logger.info("Will upload file {} to OBS", remotePath);
             fileNames.add(uploadFile(currentDate, is));
-            logger.info("Done upload file {} to OBS", localFilePath);
+            logger.info("Done upload file {} to OBS", remotePath);
         }
 
         logger.info("Will send event to kafka");
