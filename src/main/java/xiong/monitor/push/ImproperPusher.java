@@ -122,7 +122,7 @@ public class ImproperPusher {
 
         HttpClient httpClient = HttpClients.createDefault();
 
-        HttpGet httpGet = new HttpGet(String.format("http://%s/?videoPath=%s", videoTransferServer, localFilePath));
+        HttpGet httpGet = new HttpGet(String.format("http://%s/?path=%s", videoTransferServer, localFilePath));
 
         HttpResponse response = httpClient.execute(httpGet);
 
