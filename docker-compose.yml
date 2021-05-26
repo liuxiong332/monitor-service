@@ -5,9 +5,9 @@ services:
         ports:
         - "8088:8088"
         environment: 
-            MYSQL_HOST: db
-            REDIS_HOST: redis
-            VIDEO_TR_HOST: 172.17.0.1
+            MYSQL_HOST: 127.0.0.1
+            REDIS_HOST: 127.0.0.1
+            VIDEO_TR_HOST: 127.0.0.1
         network_mode: host
         depends_on:
         - db
