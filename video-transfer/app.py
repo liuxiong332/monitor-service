@@ -18,13 +18,26 @@ def transfer_video():
     )
 
     video_path = request.args.get("videoPath", "")
-    prefix, filename = os.path.split(video_path)
-    new_path = os.path.join(prefix, filename.replace(".ts", ".mp4"))
-    subprocess.run(["ffmpeg", "-i", video_path, "-c", "copy", "-y", new_path])
+
+    if video_path != "":
+        prefix, filename = os.path.split(video_path)
+        new_path = os.path.join(prefix, filename.replace(".ts", ".mp4"))
+        subprocess.run(["ffmpeg", "-i", video_path, "-c", "copy", "-y", new_path])
+        
+        
+        file_name = "{}.mp4".format(int(datetime.datetime.now().timestamp()))
+        client.fput_object(
+            "videos", file_name, new_path, content_type="video/mp4"
+        )
+        return "http://12.168.1.152:9000/videos/{}".format(file_name)
     
-    
-    file_name = "{}.mp4".format(int(datetime.datetime.now().timestamp()))
-    client.fput_object(
-        "videos", file_name, new_path, content_type="video/mp4"
-    )
-    return "http://12.168.1.152:9000/videos/{}".format(file_name)
+    image_path = request.args.get("imagePath", "")
+    if image_path != "":
+        _, filename = os.path.split(image_path)
+        _, extension = os.path.splitext(filename)
+
+        file_name = "{}{}".format(int(datetime.datetime.now().timestamp()), extension)
+        client.fput_object(
+            "pictures", file_name, image_path, content_type="image/png"
+        )
+        return "http://12.168.1.152:9000/pictures/{}".format(file_name)
