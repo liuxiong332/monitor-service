@@ -8,6 +8,8 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:12.168.1.152}:${MYSQL_PORT:3306}/monitor_service?serverTimezone=UTC&useLegacyDatetimeCode=false
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:12345678}
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVER:49.4.14.137:7072}
   redis:
     host: ${REDIS_HOST:12.168.1.152}
     port: ${REDIS_PORT:6379}
@@ -29,6 +31,14 @@ mybatis:
 
 server:
   port: 8088
+
+deploy:
+  code: ${DEPLOY_CODE:150526B0012000310068}
+
+obs:
+  access-key: ${OBS_ACCESS_KEY:P5UIUEXG26ZJOVV2ZOQF}
+  secret-key: ${OBS_SECRET_KEY:Gx0m62p8nZnF1pyuagE9eyxaSlEh2zrwO7Qb3ZzB}
+  bucket: obs-risk-safe-pd
 #mybatis-plus配置控制台打印完整带参数SQL语句
 #mybatis-plus:
 #  configuration:
