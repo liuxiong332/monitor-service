@@ -85,13 +85,18 @@ public class ImproperPusher {
         return todayCounter;
     }
 
-    public String uploadFile(Date date, InputStream ins) throws IOException {
+    public String uploadFile(Date date, InputStream ins, String extension) throws IOException {
         String dateStr = formatDate("yyyyMMddHHmmss", date);
-        String fileName = String.format("%s.png", dateStr);
+        String fileName = String.format("%s%s", dateStr, extension);
 
+        String fileType = "image";
+        if (extension.equals(".mp4")) {
+            fileType = "video";
+        }
 
         String todayStr = formatDate("yyyy-MM-dd", date);
-        String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, "driver_call", "video", fileName);
+        String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, "driver_call", fileType, fileName);
+        logger.info("Will put file to OBS path {}", obsPath);
         obsClient.putObject(obsBucket, obsPath, ins);
 
         // FileUtils.copyInputStreamToFile(obsClient.getObject(obsBucket, obsPath).getObjectContent(), new File("item.png"));
@@ -145,7 +150,8 @@ public class ImproperPusher {
         ArrayList<String> fileNames = new ArrayList<>();
         try (InputStream is = downloadFromPath(remotePath)) {
             logger.info("Will upload file {} to OBS", remotePath);
-            fileNames.add(uploadFile(currentDate, is));
+            String extension = remotePath.substring(remotePath.lastIndexOf("."));
+            fileNames.add(uploadFile(currentDate, is, extension));
             logger.info("Done upload file {} to OBS", remotePath);
         }
 
