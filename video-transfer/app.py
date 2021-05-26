@@ -38,6 +38,6 @@ def transfer_video():
 
         file_name = "{}{}".format(int(datetime.datetime.now().timestamp()), extension)
         client.fput_object(
-            "pictures", file_name, image_path, content_type="image/png"
+            "pictures", file_name, image_path,
         )
         return "http://12.168.1.152:9000/pictures/{}".format(file_name)
