@@ -32,3 +32,6 @@ build/
 
 ### Node ###
 node_modules
+
+nohup.out  
+__pycache__

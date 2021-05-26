@@ -1,0 +1,3 @@
+MONITOR_HOST=12.168.1.152
+MINIO_HOST=12.168.1.152
+sudo docker-compose up
