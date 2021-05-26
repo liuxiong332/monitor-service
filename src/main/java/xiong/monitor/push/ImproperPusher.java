@@ -28,9 +28,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 @Component
 public class ImproperPusher {
@@ -84,11 +86,11 @@ public class ImproperPusher {
     }
 
     public String uploadFile(Date date, InputStream ins) throws IOException {
-        String dateStr = new SimpleDateFormat("yyyyMMddHHmmss").format(date);
+        String dateStr = formatDate("yyyyMMddHHmmss", date);
         String fileName = String.format("%s.png", dateStr);
 
 
-        String todayStr = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String todayStr = formatDate("yyyy-MM-dd", date);
         String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, "driver_call", "video", fileName);
         obsClient.putObject(obsBucket, obsPath, ins);
 
@@ -97,8 +99,14 @@ public class ImproperPusher {
         return fileName;
     }
 
+    String formatDate(String format, Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Asia/Shanghai")));
+        return dateFormat.format(date);
+    }
+
     String genEventId(Date date) {
-        String todayStr = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String todayStr = formatDate("yyyy-MM-dd", date);
         int todayCounter = genTodayCounter(todayStr);
 
         return String.format("%s-%d", todayStr, todayCounter).replace("-", "");
@@ -147,7 +155,7 @@ public class ImproperPusher {
             this.put("fileNames", fileNames);
             this.put("mineCode", deployCode);
             this.put("alarmType", "driver_call");
-            this.put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currentDate));
+            this.put("date", formatDate("yyyy-MM-dd HH:mm:ss", currentDate));
             this.put("cameraId", 1);
             this.put("cameraName", "001号卡车");
         }}));

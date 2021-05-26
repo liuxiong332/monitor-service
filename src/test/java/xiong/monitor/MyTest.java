@@ -4,7 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Base64;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class MyTest {
 
@@ -18,5 +22,12 @@ public class MyTest {
 
         // Base64.getDecoder().decode(encodePwd)
         System.out.println(encodePwd);
+    }
+
+    @Test
+    void dateTest() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        format.setTimeZone(TimeZone.getTimeZone(ZoneId.of("Asia/Shanghai")));
+        System.out.println(format.format(new Date()));
     }
 }
