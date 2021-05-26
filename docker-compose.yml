@@ -7,7 +7,7 @@ services:
         environment: 
             MYSQL_HOST: db
             REDIS_HOST: redis
-            VIDEO_TR_HOST: 12.168.1.152
+            VIDEO_TR_HOST: 172.17.0.1
         depends_on:
         - db
         - redis
