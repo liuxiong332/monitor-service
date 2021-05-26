@@ -3,7 +3,7 @@ services:
     monitor-service:
         build: .
         ports:
-        - "8088:8080"
+        - "8088:8088"
         environment: 
             MYSQL_HOST: db
             REDIS_HOST: redis
