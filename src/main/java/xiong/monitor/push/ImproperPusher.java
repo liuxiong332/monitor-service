@@ -48,6 +48,9 @@ public class ImproperPusher {
     @Value("${obs.bucket}")
     String obsBucket;
 
+    @Value("${video.transfer-server}")
+    String videoTransferServer;
+
     @Autowired
     KafkaTemplate<String, String> template;
 
@@ -106,7 +109,7 @@ public class ImproperPusher {
 
         HttpClient httpClient = HttpClients.createDefault();
 
-        HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:5000/?videoPath=%s", localFilePath));
+        HttpGet httpGet = new HttpGet(String.format("http://%s/?videoPath=%s", videoTransferServer, localFilePath));
 
         HttpResponse response = httpClient.execute(httpGet);
 

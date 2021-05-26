@@ -39,6 +39,9 @@ obs:
   access-key: ${OBS_ACCESS_KEY:P5UIUEXG26ZJOVV2ZOQF}
   secret-key: ${OBS_SECRET_KEY:Gx0m62p8nZnF1pyuagE9eyxaSlEh2zrwO7Qb3ZzB}
   bucket: obs-risk-safe-pd
+
+video:
+  transfer-server: ${VIDEO_TR_HOST:12.168.1.152}:${VIDEO_TR_PORT:5000}
 #mybatis-plus配置控制台打印完整带参数SQL语句
 #mybatis-plus:
 #  configuration:
