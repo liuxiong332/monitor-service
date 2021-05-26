@@ -89,7 +89,7 @@ public class ImproperPusher {
 
 
         String todayStr = new SimpleDateFormat("yyyy-MM-dd").format(date);
-        String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, "driver_call", "image", fileName);
+        String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, "driver_call", "video", fileName);
         obsClient.putObject(obsBucket, obsPath, ins);
 
         // FileUtils.copyInputStreamToFile(obsClient.getObject(obsBucket, obsPath).getObjectContent(), new File("item.png"));
