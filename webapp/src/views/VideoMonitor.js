@@ -62,7 +62,7 @@ function MyVideo(props) {
   }, [props.width, props.height]);
 
   const VIDEOS = [
-    `${VideoDomain}/live/files/live00000.mp4`, 
+    `${VideoDomain}/hls_0/`, 
     `${VideoDomain}/live/files/work.mp4`,
     `${VideoDomain}/live/files/enter.mp4`,
     `${VideoDomain}/live/files/makecall.mp4`,
@@ -77,42 +77,60 @@ function MyVideo(props) {
         src="https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8"
         type="application/x-mpegURL"
       /> */}
-      {/* <source
-        src={`http://12.168.1.152:8080/live/10.mp4`}
-        type="application/x-mpegURL"
-      /> */}
       <source
+        src={`http://12.168.1.152:8080/hls_${props.index}/live.m3u8`}
+        type="application/x-mpegURL"
+      />
+      {/* <source
         src={VIDEOS[(props.deviceId - 1) % 4]}
         type="video/mp4"
-      />
+      /> */}
     </video-js>
   );
 }
 
 function OneVideoMonitor(props) {
-  if (props.deviceId == null) {
+  if (props.device == null || props.scenes == null) {
     return <div className="device-column" />;
   }
+  let scene = props.scenes.find(s => s.sceneId === props.device.deviceType);
+
+  if (scene && scene.name !== "未戴安全帽检测") {
+    const noVideoStyle = { flex: 1, height: "100%", position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }
+    return (
+      <div className="device-column" style={noVideoStyle}>
+        没有监控视频
+      </div>
+    );
+  }
+  
   return (
-    <ResizeView key={props.deviceId}>
-      <MyVideo deviceId={props.deviceId} />
+    <ResizeView key={props.device.deviceId}>
+      <MyVideo deviceId={props.device.deviceId} index={props.devices.indexOf(props.device)} />
     </ResizeView>
   );
 }
 
 export function MultiVideoMonitor(props) {
   let devices = props.devices;
+  let scenes = props.scenes;
+
+  let filterDevices = devices.filter(d => {
+    let scene = scenes.find(s => s.sceneId === d.deviceType)
+    return scene && scene.name === "未戴安全帽检测";
+  })
+
   if (props.devices.length > 1) {
     return (
       <Suspense>
         <div className="device-content">
           <div className="device-row">
-            <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />
-            <OneVideoMonitor deviceId={devices[1] && devices[1].deviceId} />
+            <OneVideoMonitor device={devices[0]} devices={filterDevices} scenes={scenes} />
+            <OneVideoMonitor device={devices[1]} devices={filterDevices} scenes={scenes} />
           </div>
           <div className="device-row">
-            <OneVideoMonitor deviceId={devices[2] && devices[2].deviceId} />
-            <OneVideoMonitor deviceId={devices[3] && devices[3].deviceId} />
+            <OneVideoMonitor device={devices[2]} devices={filterDevices} scenes={scenes} />
+            <OneVideoMonitor device={devices[3]} devices={filterDevices} scenes={scenes}/>
           </div>
         </div>
       </Suspense>
@@ -124,7 +142,7 @@ export function MultiVideoMonitor(props) {
           {devices[0] && <div style={{margin: "0 0 10px 0"}}>{devices[0].name}正在进行监控</div>}
           
           <div className="device-row">
-            <OneVideoMonitor deviceId={devices[0] && devices[0].deviceId} />
+            <OneVideoMonitor device={devices[0]} devices={filterDevices} scenes={scenes}/>
           </div>
         </div>
       </Suspense>
@@ -134,12 +152,16 @@ export function MultiVideoMonitor(props) {
 
 export default function MyVideoMonitor() {
   let [devices, setDevices] = useState([]);
+  let [scenes, setScenes] = useState([]);
   let [showDevices, setShowDevices] = useState([]);
 
   useEffect(() => {
     request(`/devices`).then(items => {
       setDevices(items);
       setShowDevices(items);
+    });
+    request(`/scenes`).then(items => {
+      setScenes(items);
     });
   }, []);
 
@@ -159,7 +181,7 @@ export default function MyVideoMonitor() {
   return (
     <React.Fragment>
       <AllMonitor devices={devices} onChange={handleChange} />
-      <MultiVideoMonitor devices={showDevices} />
+      <MultiVideoMonitor devices={showDevices} scenes={scenes}/>
     </React.Fragment>
   );
 }

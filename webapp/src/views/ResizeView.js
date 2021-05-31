@@ -19,7 +19,7 @@ export default function ResizeView(props) {
 
   return (
     <div
-      style={{ width: "100%", height: "100%", position: "relative" }}
+      style={{ flex: 1, height: "100%", position: "relative" }}
       ref={refHolder}
     >
       <div style={{ position: "absolute", width: "100%", height: "100%" }}>

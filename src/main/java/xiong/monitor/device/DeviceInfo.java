@@ -19,7 +19,5 @@ class DeviceSrc {
 @Data
 @AllArgsConstructor
 class DeviceInfo {
-  private List<DeviceSrc> sources;
-  private String hlsDir;
-  private Integer processType;
+  private List<DeviceSrc> source;
 }

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import xiong.monitor.entity.AIModel;
@@ -45,6 +46,9 @@ public class DeviceCmd {
     @Value("${DETECT_SERVICE_PORT:8004}")
     private Long detectServicePort;
 
+    @Value("${video.transfer-server}")
+    String videoTransferServer;
+
     static HashMap<String, String> SceneNameMap = new HashMap<String, String>() {{
         this.put("未戴安全帽检测", "helmetIdentify");
         this.put("离岗检测", "leaveCheck");
@@ -77,16 +81,18 @@ public class DeviceCmd {
             .collect(Collectors.toList());
 
         logger.info("Upload devices to {}", srcs);
-        // DeviceInfo deviceInfo = new DeviceInfo(srcs, videoPath, 0);
 
-        // HttpHeaders httpHeaders = new HttpHeaders();
-        // httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        // HttpEntity<DeviceInfo> httpEntity = new HttpEntity<>(deviceInfo, httpHeaders);
+         DeviceInfo deviceInfo = new DeviceInfo(srcs);
 
-        //String url = String.format("http://%s:%d/api/ds/deploy", detectServiceHost, detectServicePort);
-        //ResponseEntity<Object> responseEntity =
-        //    restTemplate.exchange(url, HttpMethod.POST, httpEntity, Object.class);
-        //System.out.println("Update the device info to remote service with " + deviceInfo);
-        //System.out.println("Remote service response with " + responseEntity.getBody());
+         HttpHeaders httpHeaders = new HttpHeaders();
+         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+         HttpEntity<DeviceInfo> httpEntity = new HttpEntity<>(deviceInfo, httpHeaders);
+
+
+        String url = String.format("http://%s/startDS", videoTransferServer);
+        ResponseEntity<Object> responseEntity =
+            restTemplate.exchange(url, HttpMethod.POST, httpEntity, Object.class);
+        // logger.info("Update the device info to remote service with " + deviceInfo);
+        logger.info("Remote service response with " + responseEntity.getBody());
     }
 }
