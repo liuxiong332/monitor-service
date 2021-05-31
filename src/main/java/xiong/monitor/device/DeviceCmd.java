@@ -90,8 +90,8 @@ public class DeviceCmd {
 
 
         String url = String.format("http://%s/startDS", videoTransferServer);
-        ResponseEntity<Object> responseEntity =
-            restTemplate.exchange(url, HttpMethod.POST, httpEntity, Object.class);
+        ResponseEntity<String> responseEntity =
+            restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
         // logger.info("Update the device info to remote service with " + deviceInfo);
         logger.info("Remote service response with " + responseEntity.getBody());
     }
