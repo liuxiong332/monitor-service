@@ -15,7 +15,9 @@ import xiong.monitor.mapper.ModelMapper;
 import xiong.monitor.mapper.SceneMapper;
 import xiong.monitor.util.ModelPaths;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,22 +45,35 @@ public class DeviceCmd {
     @Value("${DETECT_SERVICE_PORT:8004}")
     private Long detectServicePort;
 
+    static HashMap<String, String> SceneNameMap = new HashMap<String, String>() {{
+        this.put("未戴安全帽检测", "helmetIdentify");
+        this.put("离岗检测", "leaveCheck");
+        this.put("车辆入侵检测", "carCheck");
+        this.put("驾驶员接打电话检测", "phoneCheck");
+    }};
+
     public void updateDevices() {
         List<Device> devices = deviceMapper.selectList(new QueryWrapper<>());
         List<DeviceSrc> srcs = devices.stream()
             .map(device -> {
                 Optional<Scene> scene = Optional.ofNullable(sceneMapper.selectById(device.getDeviceType()));
-                Optional<AIModel> model = scene.flatMap(s -> Optional.ofNullable(s.getModelId()))
-                    .flatMap(id -> Optional.ofNullable(modelMapper.selectById(id)));
-                return new DeviceSrc(
-                    device.getDeviceId(),
-                    device.getName(),
-                    device.getServiceUrl(),
-                    device.getPath(),
-                    scene.map(Scene::getName).orElse(null),
-                    model.flatMap(m -> Optional.ofNullable(m.getModelPath()).map(ModelPaths::getModelDir)).orElse(null)
-                );
+                if (scene.isPresent() && scene.get().getName().equals("未戴安全帽检测")) {
+                    Optional<AIModel> model = scene.flatMap(s -> Optional.ofNullable(s.getModelId()))
+                        .flatMap(id -> Optional.ofNullable(modelMapper.selectById(id)));
+                    return new DeviceSrc(
+                        device.getDeviceId(),
+                        // device.getName(),
+                        device.getDeviceId().toString(),
+                        device.getServiceUrl(),
+                        device.getPath(),
+                        scene.map(Scene::getName).map(name -> SceneNameMap.getOrDefault(name, "")).orElse(null),
+                        model.flatMap(m -> Optional.ofNullable(m.getModelPath()).map(ModelPaths::getModelDir)).orElse(null)
+                    );
+                } else {
+                    return null;
+                }
             })
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         logger.info("Upload devices to {}", srcs);
