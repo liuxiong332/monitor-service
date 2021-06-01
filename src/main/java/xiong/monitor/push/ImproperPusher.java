@@ -2,6 +2,7 @@ package xiong.monitor.push;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.obs.services.ObsClient;
 import com.obs.services.ObsConfiguration;
 import org.apache.commons.io.FileUtils;
@@ -19,8 +20,12 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import xiong.monitor.entity.Device;
 import xiong.monitor.entity.EventCounter;
+import xiong.monitor.entity.EventRecord;
+import xiong.monitor.mapper.DeviceMapper;
 import xiong.monitor.mapper.EventCounterMapper;
+import xiong.monitor.mapper.EventRecordMapper;
 
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
@@ -29,10 +34,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ImproperPusher {
@@ -60,6 +63,12 @@ public class ImproperPusher {
     EventCounterMapper eventCounterMapper;
 
     ObsClient obsClient;
+
+    @Autowired
+    EventRecordMapper eventRecordMapper;
+
+    @Autowired
+    DeviceMapper deviceMapper;
 
     @PostConstruct
     void init() {
@@ -117,7 +126,7 @@ public class ImproperPusher {
         return String.format("%s-%d", todayStr, todayCounter).replace("-", "");
     }
 
-    public void transferAndSendEvent(String localFilePath) throws Exception {
+    public String transferFile(String localFilePath) throws IOException {
         logger.info("Will transfer file path {}", localFilePath);
 
         HttpClient httpClient = HttpClients.createDefault();
@@ -130,7 +139,24 @@ public class ImproperPusher {
 
         logger.info("Done transfer file path {}", transferPath);
 
-        sendEvent(transferPath);
+        return transferPath;
+    }
+
+    public void transferAndSendEvent(String localFilePath) throws Exception {
+        String transferPath = transferFile(localFilePath);
+        sendEvent(Collections.singletonList(transferPath), null);
+    }
+
+    public void transferAndSendEvent(List<String> localFilePath, Integer deviceId) throws Exception {
+        List<String> transferPath = localFilePath.stream().map(fp -> {
+            try {
+                return transferFile(fp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+        sendEvent(transferPath, deviceId);
     }
 
     InputStream downloadFromPath(String remoteUrl) throws IOException {
@@ -143,17 +169,25 @@ public class ImproperPusher {
         return response.getEntity().getContent();
     }
 
-    public void sendEvent(String remotePath) throws Exception {
+    public void sendEvent(List<String> remotePaths, Integer deviceId) throws Exception {
         Date currentDate = new Date();
         String eventId = genEventId(currentDate);
 
         ArrayList<String> fileNames = new ArrayList<>();
-        try (InputStream is = downloadFromPath(remotePath)) {
-            logger.info("Will upload file {} to OBS", remotePath);
-            String extension = remotePath.substring(remotePath.lastIndexOf("."));
-            fileNames.add(uploadFile(currentDate, is, extension));
-            logger.info("Done upload file {} to OBS", remotePath);
+        for (String remotePath: remotePaths) {
+            try (InputStream is = downloadFromPath(remotePath)) {
+                logger.info("Will upload file {} to OBS", remotePath);
+                String extension = remotePath.substring(remotePath.lastIndexOf("."));
+                fileNames.add(uploadFile(currentDate, is, extension));
+                logger.info("Done upload file {} to OBS", remotePath);
+            }
         }
+
+        logger.info("Will save event");
+        Device device = null;
+        if (deviceId != null) device = deviceMapper.selectById(deviceId);
+        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", fileNames), deviceId, device != null ? device.getDeviceType() : null, ""));
+        logger.info("Done save event");
 
         logger.info("Will send event to kafka");
         template.send("risk-safe-behavior-violation-file-info", new ObjectMapper().writeValueAsString(new HashMap<String, Object>() {{
