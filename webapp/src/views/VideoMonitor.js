@@ -117,7 +117,7 @@ export function MultiVideoMonitor(props) {
 
   let filterDevices = devices.filter(d => {
     let scene = scenes.find(s => s.sceneId === d.deviceType)
-    return scene && scene.name === "未戴安全帽检测";
+    return scene && scene.name !== "驾驶员接打电话检测";
   })
 
   if (props.devices.length > 1) {

@@ -192,7 +192,7 @@ public class ImproperPusher {
                 device = filterDevices.get(deviceIndex);
             }
         }
-        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", fileNames), deviceIndex, device != null ? device.getDeviceType() : null, ""));
+        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", remotePaths), deviceIndex, device != null ? device.getDeviceType() : null, ""));
         logger.info("Done save event");
 
         logger.info("Will send event to kafka");

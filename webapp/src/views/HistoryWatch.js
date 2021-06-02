@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Table, Button, Typography, Form, Input, Drawer, Image, Checkbox, Space, DatePicker } from "antd";
 import { MinioDomain, MinioPort } from "../common";
 import moment from 'moment';
+import { request, VideoDomain } from "../common";
 
 const { Title } = Typography;
 
@@ -91,31 +92,36 @@ const columns = [
   //   dataIndex: "name",
   //   key: "name"
   // },
-  {
-    title: "所属机构",
-    dataIndex: "belong",
-    key: "belong"
-  },
+  // {
+  //   title: "所属机构",
+  //   dataIndex: "belong",
+  //   key: "belong"
+  // },
   {
     title: "违章类型",
-    dataIndex: "type",
-    key: "type"
+    dataIndex: "deviceId",
+    key: "deviceId"
   },
   {
-    title: "检测位置",
-    dataIndex: "position",
-    key: "position"
+    title: "设备",
+    dataIndex: "deviceId",
+    key: "deviceId"
   },
+  // {
+  //   title: "检测位置",
+  //   dataIndex: "position",
+  //   key: "position"
+  // },
   {
     title: "报警时间",
-    dataIndex: "time",
-    key: "time"
+    dataIndex: "eventDate",
+    key: "eventDate"
   },
-  {
-    title: "报警持续时间",
-    dataIndex: "duration",
-    key: "duration"
-  },
+  // {
+  //   title: "报警持续时间",
+  //   dataIndex: "duration",
+  //   key: "duration"
+  // },
   // {
   //   title: "车速",
   //   dataIndex: "speed",
@@ -136,10 +142,20 @@ const columns = [
     dataIndex: "",
     key: "x",
     render: (record) => (
-      <Image
-        width={20}
-        src={record.image}
-      />
+      <>
+        {record.fileNames.split(',').map(fn => {
+          let isVideo = /\.mp4/.test(fn)
+          if (isVideo) {
+            return <a src={'http://12.168.1.152:9000/videos/' + fn}>视频</a>
+          } else {
+            return <Image
+              width={20}
+              src={'http://12.168.1.152:9000/pictures/' + fn}
+            />
+          }
+        })
+        }
+      </>
     )
   }
 ];
@@ -153,6 +169,14 @@ export default function DeviceManager() {
 
   let [timeRange, setTimeRange] = useState(null);
 
+  let [eventRecords, setEventRecords] = useState([]);
+
+  useEffect(() => {
+    request(`/events`).then(items => {
+      setEventRecords(items);
+    });
+  }, []);
+
   function onChange(checkedValues) {
     setOptions(checkedValues);
   }
@@ -161,23 +185,23 @@ export default function DeviceManager() {
     setTimeRange(value)
   };
 
-  let filterSrc = dataSource.filter(item => 
-    options.indexOf(item.type) !== -1 
+  let filterSrc = dataSource.filter(item =>
+    options.indexOf(item.type) !== -1
     && (timeRange == null || moment(item.time) >= timeRange[0] && moment(item.time) <= timeRange[1])
   )
   return (
     <div style={{ margin: "10px 10px" }}>
-      <Space size={12} style={{ margin: "10px 0", justifyContent: "space-between", display: "flex"}}>
+      <Space size={12} style={{ margin: "10px 0", justifyContent: "space-between", display: "flex" }}>
         <Checkbox.Group options={plainOptions} value={options} onChange={onChange} />
-        <RangePicker onChange={handleRangeChange}/>
+        <RangePicker onChange={handleRangeChange} />
       </Space>
-      
+
       <Table
         rowKey="deviceId"
-        dataSource={filterSrc}
+        dataSource={eventRecords}
         columns={columns}
       />
-   
+
     </div>
   );
 }
