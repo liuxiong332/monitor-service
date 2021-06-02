@@ -147,7 +147,7 @@ public class ImproperPusher {
         sendEvent(Collections.singletonList(transferPath), null);
     }
 
-    public void transferAndSendEvent(List<String> localFilePath, Integer deviceId) throws Exception {
+    public void transferAndSendEvent(List<String> localFilePath, Integer deviceIndex) throws Exception {
         List<String> transferPath = localFilePath.stream().map(fp -> {
             try {
                 return transferFile(fp);
@@ -156,7 +156,7 @@ public class ImproperPusher {
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
-        sendEvent(transferPath, deviceId);
+        sendEvent(transferPath, deviceIndex);
     }
 
     InputStream downloadFromPath(String remoteUrl) throws IOException {
@@ -169,7 +169,7 @@ public class ImproperPusher {
         return response.getEntity().getContent();
     }
 
-    public void sendEvent(List<String> remotePaths, Integer deviceId) throws Exception {
+    public void sendEvent(List<String> remotePaths, Integer deviceIndex) throws Exception {
         Date currentDate = new Date();
         String eventId = genEventId(currentDate);
 
@@ -185,8 +185,14 @@ public class ImproperPusher {
 
         logger.info("Will save event");
         Device device = null;
-        if (deviceId != null) device = deviceMapper.selectById(deviceId);
-        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", fileNames), deviceId, device != null ? device.getDeviceType() : null, ""));
+        if (deviceIndex != null) {
+            List<Device> devices = deviceMapper.selectList(new QueryWrapper<>());
+            List<Device> filterDevices = devices.stream().filter(d -> !d.getName().equals("驾驶员接打电话检测")).collect(Collectors.toList());
+            if (deviceIndex >= 0 && deviceIndex < filterDevices.size()) {
+                device = filterDevices.get(deviceIndex);
+            }
+        }
+        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", fileNames), deviceIndex, device != null ? device.getDeviceType() : null, ""));
         logger.info("Done save event");
 
         logger.info("Will send event to kafka");
