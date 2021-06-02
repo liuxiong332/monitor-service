@@ -146,15 +146,14 @@ const columns = [
         {record.fileNames.split(',').map(fn => {
           let isVideo = /\.mp4/.test(fn)
           if (isVideo) {
-            return <a src={'http://12.168.1.152:9000/videos/' + fn}>视频</a>
+            return <a src={fn} onClick={() => open(fn)}>视频</a>
           } else {
             return <Image
               width={20}
-              src={'http://12.168.1.152:9000/pictures/' + fn}
+              src={fn}
             />
           }
-        })
-        }
+        })}
       </>
     )
   }
