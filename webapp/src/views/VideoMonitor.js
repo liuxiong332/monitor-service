@@ -95,7 +95,7 @@ function OneVideoMonitor(props) {
   }
   let scene = props.scenes.find(s => s.sceneId === props.device.deviceType);
 
-  if (scene && scene.name !== "未戴安全帽检测") {
+  if (scene && scene.name === "驾驶员接打电话检测") {
     const noVideoStyle = { flex: 1, height: "100%", position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }
     return (
       <div className="device-column" style={noVideoStyle}>

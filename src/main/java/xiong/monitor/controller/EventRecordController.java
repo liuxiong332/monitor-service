@@ -45,6 +45,7 @@ class EventRecordController {
       queryWrapper.lt("event_date", dateFormat.parse(endDate).getTime());
       queryWrapper.gt("event_date", dateFormat.parse(startDate).getTime());
     }
+    queryWrapper.orderByDesc("event_date");
     List<EventRecord> records = eventRecordMapper.selectList(queryWrapper);
     return new OutputResult<>(records);
   }
