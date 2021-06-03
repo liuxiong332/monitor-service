@@ -151,9 +151,9 @@ export function MultiVideoMonitor(props) {
 }
 
 export default function MyVideoMonitor() {
-  let [devices, setDevices] = useState([]);
-  let [scenes, setScenes] = useState([]);
-  let [showDevices, setShowDevices] = useState([]);
+  let [devices, setDevices] = useState(null);
+  let [scenes, setScenes] = useState(null);
+  let [showDevices, setShowDevices] = useState(null);
 
   useEffect(() => {
     request(`/devices`).then(items => {
@@ -178,6 +178,8 @@ export default function MyVideoMonitor() {
     },
     [devices]
   );
+
+  if (devices == null || scenes == null || showDevices == null) return null;
   return (
     <React.Fragment>
       <AllMonitor devices={devices} onChange={handleChange} />
