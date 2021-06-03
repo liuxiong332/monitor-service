@@ -13,7 +13,7 @@ public class Device {
   public Device() {}
 
   public Device(
-      Long id,
+      Integer id,
       String name,
       String password,
       String serviceUrl,
@@ -37,7 +37,7 @@ public class Device {
   }
 
   @TableId(type = IdType.AUTO)
-  private Long deviceId;
+  private Integer deviceId;
 
   private String name;
 

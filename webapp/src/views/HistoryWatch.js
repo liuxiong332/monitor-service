@@ -173,13 +173,18 @@ export default function DeviceManager() {
 
   let [eventRecords, setEventRecords] = useState([]);
 
+  let [devices, setDevices] = useState([]);
+
   let [scenes, setScenes] = useState([])
 
   useEffect(() => {
     request('/scenes').then(items => {
       setScenes(items);
       setOptions(items.map(s => s.sceneId));
-    })
+    });
+    request(`/devices`).then(items => {
+      setDevices(items);
+    });
   }, []);
 
   useEffect(() => {
@@ -201,6 +206,62 @@ export default function DeviceManager() {
     && (timeRange == null || moment(item.eventDate) >= timeRange[0] && moment(item.eventDate) <= timeRange[1])
   )
   let sceneOptions = scenes.map(scene => ({ label: scene.name, value: scene.sceneId }))
+
+  const columns = [
+    {
+      title: "违章类型",
+      dataIndex: "sceneId",
+      key: "sceneId",
+      render: (value) => {
+        if (value != null) {
+          let scene = sceneOptions.find(s => s.value === value);
+          return scene ? scene.label : "";
+        }
+        return "";
+      }
+    },
+    {
+      title: "设备",
+      dataIndex: "deviceId",
+      key: "deviceId",
+      render: (value) => {
+        if (value != null) {
+          let device = devices.find(d => d.deviceId === value);
+          return device ? device.name: "";
+        }
+        return "";
+      }
+    },
+    {
+      title: "报警时间",
+      dataIndex: "eventDate",
+      key: "eventDate",
+      render: (value, record) => {
+        return moment(value).format("YYYY-MM-DD HH:mm");
+      } 
+    },
+    {
+      title: "浏览",
+      dataIndex: "",
+      key: "x",
+      render: (record) => (
+        <Space>
+          {record.fileNames.split(',').map(fn => {
+            let isVideo = /\.mp4/.test(fn)
+            if (isVideo) {
+              return <a src={fn} onClick={() => window.open(fn)}>视频</a>
+            } else {
+              return <Image
+                width={20}
+                src={fn}
+              />
+            }
+          })}
+        </Space>
+      )
+    }
+  ];
+
   return (
     <div style={{ margin: "10px 10px" }}>
       <Space size={12} style={{ margin: "10px 0", justifyContent: "space-between", display: "flex" }}>

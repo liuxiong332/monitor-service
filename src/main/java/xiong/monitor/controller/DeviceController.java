@@ -36,14 +36,14 @@ class DeviceController {
   }
 
   @PostMapping("/devices")
-  OutputResult<Long> addDevice(@RequestBody Device device) {
+  OutputResult<Integer> addDevice(@RequestBody Device device) {
     deviceMapper.insert(device);
     deviceCmd.updateDevices();
     return new OutputResult<>(device.getDeviceId());
   }
 
   @PutMapping("/devices/{id}")
-  OutputResult<Object> updateDevice(@RequestBody Device device, @PathVariable Long id) {
+  OutputResult<Object> updateDevice(@RequestBody Device device, @PathVariable Integer id) {
     logger.info("Will update device " + device.toString());
     device.setDeviceId(id);
     deviceMapper.updateById(device);

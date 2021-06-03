@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 class DeviceSrc {
-  private Long deviceId;
+  private Integer deviceId;
   private String deviceName;
   private String deviceIP;
   private String videoPath;
