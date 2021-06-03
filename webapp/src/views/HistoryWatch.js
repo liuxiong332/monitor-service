@@ -115,7 +115,10 @@ const columns = [
   {
     title: "报警时间",
     dataIndex: "eventDate",
-    key: "eventDate"
+    key: "eventDate",
+    render: (value, record) => {
+      return moment(value).format("YYYY-MM-DD HH:mm");
+    } 
   },
   // {
   //   title: "报警持续时间",
@@ -142,11 +145,11 @@ const columns = [
     dataIndex: "",
     key: "x",
     render: (record) => (
-      <>
+      <Space>
         {record.fileNames.split(',').map(fn => {
           let isVideo = /\.mp4/.test(fn)
           if (isVideo) {
-            return <a src={fn} onClick={() => open(fn)}>视频</a>
+            return <a src={fn} onClick={() => window.open(fn)}>视频</a>
           } else {
             return <Image
               width={20}
@@ -154,7 +157,7 @@ const columns = [
             />
           }
         })}
-      </>
+      </Space>
     )
   }
 ];
@@ -164,11 +167,20 @@ const plainOptions = ['安全帽识别', '车辆入侵', '接打电话', "调度
 const { RangePicker } = DatePicker;
 
 export default function DeviceManager() {
-  let [options, setOptions] = useState(plainOptions);
+  let [options, setOptions] = useState([]);
 
   let [timeRange, setTimeRange] = useState(null);
 
   let [eventRecords, setEventRecords] = useState([]);
+
+  let [scenes, setScenes] = useState([])
+
+  useEffect(() => {
+    request('/scenes').then(items => {
+      setScenes(items);
+      setOptions(items.map(s => s.sceneId));
+    })
+  }, []);
 
   useEffect(() => {
     request(`/events`).then(items => {
@@ -184,20 +196,21 @@ export default function DeviceManager() {
     setTimeRange(value)
   };
 
-  let filterSrc = dataSource.filter(item =>
-    options.indexOf(item.type) !== -1
-    && (timeRange == null || moment(item.time) >= timeRange[0] && moment(item.time) <= timeRange[1])
+  let filterSrc = eventRecords.filter(item =>
+    (item.sceneId == null || options.indexOf(item.sceneId) !== -1)
+    && (timeRange == null || moment(item.eventDate) >= timeRange[0] && moment(item.eventDate) <= timeRange[1])
   )
+  let sceneOptions = scenes.map(scene => ({ label: scene.name, value: scene.sceneId }))
   return (
     <div style={{ margin: "10px 10px" }}>
       <Space size={12} style={{ margin: "10px 0", justifyContent: "space-between", display: "flex" }}>
-        <Checkbox.Group options={plainOptions} value={options} onChange={onChange} />
+        <Checkbox.Group options={sceneOptions} value={options} onChange={onChange} />
         <RangePicker onChange={handleRangeChange} />
       </Space>
 
       <Table
-        rowKey="deviceId"
-        dataSource={eventRecords}
+        rowKey="eventId"
+        dataSource={filterSrc}
         columns={columns}
       />
 

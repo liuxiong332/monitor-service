@@ -61,7 +61,7 @@ public class DeviceCmd {
         List<DeviceSrc> srcs = devices.stream()
             .map(device -> {
                 Optional<Scene> scene = Optional.ofNullable(sceneMapper.selectById(device.getDeviceType()));
-                if (scene.isPresent() && scene.get().getName().equals("未戴安全帽检测")) {
+                if (scene.isPresent() && !scene.get().getName().equals("驾驶员接打电话检测")) {
                     Optional<AIModel> model = scene.flatMap(s -> Optional.ofNullable(s.getModelId()))
                         .flatMap(id -> Optional.ofNullable(modelMapper.selectById(id)));
                     return new DeviceSrc(
