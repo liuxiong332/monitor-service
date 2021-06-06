@@ -9,6 +9,7 @@ import json
 import re
 import requests
 from flask_apscheduler import APScheduler
+from shutil import copyfile
 
 app = Flask(__name__)
 scheduler = APScheduler()
@@ -52,16 +53,64 @@ def start_ds():
     print(device_info)
     subprocess.run(['pkill', 'deepstream-app'])
     
-    with open('/home/optical/test_config/devices.json', 'w') as f:
-        f.write(json.dumps(device_info, indent=4))
+    if not os.path.exists('~/deepstream'):
+        os.mkdir('~/deepstream')
 
-    subprocess.run(['/home/optical/test_config/test'], cwd='/home/optical/test_config/')
+    # with open('~/deepstream/devices.json', 'w') as f:
+    #     f.write(json.dumps(device_info, indent=4))
 
-    for index in range(1, len(device_info['source']) + 1):
-        model_file = '/home/optical/test_config/model_{}/deepstream_config.txt'.format(index)
-        log_fn = open('dslog_{}.log'.format(index), 'w')
-        subprocess.Popen(['/opt/nvidia/deepstream/deepstream-5.0/sources/objectDetector_Yolo/deepstream-app', '-c', model_file], stdout=log_fn, stderr=log_fn, cwd='/home/optical/test_config/')
+    for index, dev_info in enumerate(device_info['source']):
+        
+        config_file = None
+        if dev_info['scene'] == 'helmetIdentify':
+            config_file = '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-helmet-{}.txt'.format(index)
+            copyfile(
+                '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-helmet.txt', 
+                config_file
+            )
+        elif dev_info['scene'] == 'carCheck':
+            config_file = '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-car-{}.txt'.format(index)
+            copyfile(
+                '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-car.txt', 
+                config_file
+            )
+        elif dev_info['scene'] == 'leaveCheck':
+            config_file = '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-person-{}.txt'.format(index)
+            copyfile(
+                '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-person.txt', 
+                config_file
+            )
+
+        if config_file is not None:
+            with open(config_file, 'rw+') as f:
+                content = f.read()
+                content1 =  re.sub(r'#(.+)', '', content)
+                content2= re.sub(r'uri=.+', 'uri={}'.format(dev_info['deviceIP']), content1)
+                last_content = re.sub(r'output-file=.+', 'output-file=/mnt/hls/hls_{}'.format(index), content2)  
+                f.write(last_content)
+
+            log_fn = open('dslog_{}.log'.format(index), 'w')
+            subprocess.Popen(['~/Documents/sources/objectDetector_Yolo/deepstream-app', '-c', config_file], stdout=log_fn, stderr=log_fn, cwd='~/Documents/sources/objectDetector_Yolo/')
+
     return 'OK'
+
+# @app.route("/startDS", methods=['POST'])
+# def start_ds():
+#     print('start deepstream')
+#     device_info = request.get_json(force=True)
+#     print(device_info)
+#     subprocess.run(['pkill', 'deepstream-app'])
+    
+#     with open('/home/optical/test_config/devices.json', 'w') as f:
+#         f.write(json.dumps(device_info, indent=4))
+
+#     subprocess.run(['/home/optical/test_config/test'], cwd='/home/optical/test_config/')
+
+#     for index in range(1, len(device_info['source']) + 1):
+#         model_file = '/home/optical/test_config/model_{}/deepstream_config.txt'.format(index)
+#         log_fn = open('dslog_{}.log'.format(index), 'w')
+#         subprocess.Popen(['/opt/nvidia/deepstream/deepstream-5.0/sources/objectDetector_Yolo/deepstream-app', '-c', model_file], stdout=log_fn, stderr=log_fn, cwd='/home/optical/test_config/')
+#     return 'OK'
 
 
 @scheduler.task('interval', id='do_job_1', seconds=300, misfire_grace_time=900)
