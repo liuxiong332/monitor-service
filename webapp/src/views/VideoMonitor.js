@@ -78,7 +78,7 @@ function MyVideo(props) {
         type="application/x-mpegURL"
       /> */}
       <source
-        src={`http://12.168.1.152:8080/hls_${props.index}/live.m3u8`}
+        src={`http://222.74.238.102:8090/hls_${props.index}/live.m3u8`}
         type="application/x-mpegURL"
       />
       {/* <source
