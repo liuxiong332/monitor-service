@@ -113,6 +113,7 @@ function OneVideoMonitor(props) {
 
 export function MultiVideoMonitor(props) {
   let devices = props.devices;
+  let showDevices = props.showDevices;
   let scenes = props.scenes;
 
   let filterDevices = devices.filter(d => {
@@ -120,17 +121,17 @@ export function MultiVideoMonitor(props) {
     return scene && scene.name !== "驾驶员接打电话检测";
   })
 
-  if (props.devices.length > 1) {
+  if (showDevices.length > 1) {
     return (
       <Suspense>
         <div className="device-content">
           <div className="device-row">
-            <OneVideoMonitor device={devices[0]} devices={filterDevices} scenes={scenes} />
-            <OneVideoMonitor device={devices[1]} devices={filterDevices} scenes={scenes} />
+            <OneVideoMonitor device={showDevices[0]} devices={filterDevices} scenes={scenes} />
+            <OneVideoMonitor device={showDevices[1]} devices={filterDevices} scenes={scenes} />
           </div>
           <div className="device-row">
-            <OneVideoMonitor device={devices[2]} devices={filterDevices} scenes={scenes} />
-            <OneVideoMonitor device={devices[3]} devices={filterDevices} scenes={scenes}/>
+            <OneVideoMonitor device={showDevices[2]} devices={filterDevices} scenes={scenes} />
+            <OneVideoMonitor device={showDevices[3]} devices={filterDevices} scenes={scenes}/>
           </div>
         </div>
       </Suspense>
@@ -139,10 +140,10 @@ export function MultiVideoMonitor(props) {
     return (
       <Suspense>
         <div className="device-content">
-          {devices[0] && <div style={{margin: "0 0 10px 0"}}>{devices[0].name}正在进行监控</div>}
+          {showDevices[0] && <div style={{margin: "0 0 10px 0"}}>{showDevices[0].name}正在进行监控</div>}
           
           <div className="device-row">
-            <OneVideoMonitor device={devices[0]} devices={filterDevices} scenes={scenes}/>
+            <OneVideoMonitor device={showDevices[0]} devices={filterDevices} scenes={scenes}/>
           </div>
         </div>
       </Suspense>
@@ -183,7 +184,7 @@ export default function MyVideoMonitor() {
   return (
     <React.Fragment>
       <AllMonitor devices={devices} onChange={handleChange} />
-      <MultiVideoMonitor devices={showDevices} scenes={scenes}/>
+      <MultiVideoMonitor devices={devices} showDevices={showDevices} scenes={scenes}/>
     </React.Fragment>
   );
 }
