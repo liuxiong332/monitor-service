@@ -1,11 +1,16 @@
-const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || "localhost";
+
+const IS_INNER_NET = /172\.16\.\d+\.\d+/.test(window.location.host) // window.location.host
+
+const BROWSER_DOMAIN = /([^:]+)/.exec(window.location.host)[0]
+
+const SERVICE_HOST = process.env.REACT_APP_SERVICE_HOST || BROWSER_DOMAIN;
 const SERVICE_PORT = process.env.REACT_APP_SERVICE_PORT || 8088;
 
-const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || "10.168.1.152";
+const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || BROWSER_DOMAIN;
 const MINIO_PORT = Number(process.env.REACT_APP_MINIO_PORT || 9000);
 
 export const Domain = `http://${SERVICE_HOST}:${SERVICE_PORT}`;
-export const VideoDomain = `http://${SERVICE_HOST}:8080`;
+export const VideoDomain = `http://${SERVICE_HOST}:${IS_INNER_NET ? 8090 : 8080}`;
 export const MinioDomain = MINIO_HOST;
 export const MinioPort = MINIO_PORT;
 
