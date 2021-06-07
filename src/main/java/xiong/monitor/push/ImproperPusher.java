@@ -162,7 +162,7 @@ public class ImproperPusher {
     InputStream downloadFromPath(String remoteUrl) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
 
-        HttpGet httpGet = new HttpGet(remoteUrl);
+        HttpGet httpGet = new HttpGet("http://localhost:9000" + remoteUrl);
 
         HttpResponse response = httpClient.execute(httpGet);
 
