@@ -249,11 +249,11 @@ export default function DeviceManager() {
           {record.fileNames.split(',').map(fn => {
             let isVideo = /\.mp4/.test(fn)
             if (isVideo) {
-              return <a src={fn} onClick={() => window.open(fn)}>视频</a>
+              return <a src={VideoDomain + fn} onClick={() => window.open(VideoDomain + fn)}>视频</a>
             } else {
               return <Image
                 width={20}
-                src={fn}
+                src={VideoDomain + fn}
               />
             }
           })}
