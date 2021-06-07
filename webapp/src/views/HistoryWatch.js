@@ -2,9 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Table, Button, Typography, Form, Input, Drawer, Image, Checkbox, Space, DatePicker } from "antd";
 import { MinioDomain, MinioPort } from "../common";
 import moment from 'moment';
-import { request, VideoDomain } from "../common";
+import { request } from "../common";
 
 const { Title } = Typography;
+
+const MediaPrefix = `http://${MinioDomain}:${MinioPort}`
 
 const dataSource = [
   {
@@ -149,11 +151,11 @@ const columns = [
         {record.fileNames.split(',').map(fn => {
           let isVideo = /\.mp4/.test(fn)
           if (isVideo) {
-            return <a src={fn} onClick={() => window.open(VideoDomain + fn)}>视频</a>
+            return <a src={MediaPrefix + fn} onClick={() => window.open(MediaPrefix + fn)}>视频</a>
           } else {
             return <Image
               width={20}
-              src={VideoDomain + fn}
+              src={MediaPrefix + fn}
             />
           }
         })}
@@ -249,11 +251,11 @@ export default function DeviceManager() {
           {record.fileNames.split(',').map(fn => {
             let isVideo = /\.mp4/.test(fn)
             if (isVideo) {
-              return <a src={VideoDomain + fn} onClick={() => window.open(VideoDomain + fn)}>视频</a>
+              return <a src={MediaPrefix + fn} onClick={() => window.open(MediaPrefix + fn)}>视频</a>
             } else {
               return <Image
                 width={20}
-                src={VideoDomain + fn}
+                src={MediaPrefix + fn}
               />
             }
           })}
