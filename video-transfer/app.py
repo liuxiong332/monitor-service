@@ -90,6 +90,10 @@ def start_ds():
             with open(config_file, 'w') as f:
                 f.write(last_content)
 
+            hls_dir = '/mnt/hls/hls_{}'.format(index)
+            if not os.path.exists(hls_dir):
+                os.mkdir(hls_dir)
+                
             log_fn = open('dslog_{}.log'.format(index), 'w')
             subprocess.Popen(['/home/ai/Documents/sources/objectDetector_Yolo/deepstream-app', '-c', config_file], stdout=log_fn, stderr=log_fn, cwd='/home/ai/Documents/sources/objectDetector_Yolo/')
 
