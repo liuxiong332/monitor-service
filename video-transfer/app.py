@@ -14,6 +14,10 @@ from shutil import copyfile
 app = Flask(__name__)
 scheduler = APScheduler()
 
+with open(os.path.join(os.path.dirname(__file__), "config.json")) as f:
+    config = json.load(f)
+print("Will apply config {}".format(config))
+
 @app.route("/")
 def transfer_video():
     client = minio.Minio(
@@ -53,28 +57,28 @@ def start_ds():
     print(device_info)
     subprocess.run(['pkill', 'deepstream-app'])
 
-    with open('/home/ai/devices.json', 'w') as f:
+    with open(os.path.expanduser('~/devices.json'), 'w') as f:
         f.write(json.dumps(device_info, indent=4))
 
     for index, dev_info in enumerate(device_info['source']):
         
         config_file = None
         if dev_info['scene'] == 'helmetIdentify':
-            config_file = '/home/ai/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-helmet-{}.txt'.format(index)
+            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-helmet-{}.txt'.format(index)) 
             copyfile(
-                '/home/ai/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-helmet.txt', 
+                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-helmet.txt'), 
                 config_file
             )
         elif dev_info['scene'] == 'carCheck':
-            config_file = '/home/ai/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-car-{}.txt'.format(index)
+            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-car-{}.txt'.format(index)) 
             copyfile(
-                '/home/ai/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-car.txt', 
+                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-car.txt'),
                 config_file
             )
         elif dev_info['scene'] == 'leaveCheck':
-            config_file = '/home/ai/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-person-{}.txt'.format(index)
+            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-person-{}.txt'.format(index)) 
             copyfile(
-                '/home/ai/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-person.txt', 
+                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-person.txt'), 
                 config_file
             )
 
@@ -95,7 +99,7 @@ def start_ds():
                 os.mkdir(hls_dir)
                 
             log_fn = open('dslog_{}.log'.format(index), 'w')
-            subprocess.Popen(['/home/ai/Documents/sources/objectDetector_Yolo/deepstream-app', '-c', config_file], stdout=log_fn, stderr=log_fn, cwd='/home/ai/Documents/sources/objectDetector_Yolo/')
+            subprocess.Popen([os.path.join(config['deepstream_path'], 'deepstream-app'), '-c', config_file], stdout=log_fn, stderr=log_fn, cwd=config['deepstream_path'])
 
     return 'OK'
 
@@ -121,11 +125,11 @@ def start_ds():
 @scheduler.task('interval', id='do_job_1', seconds=300, misfire_grace_time=900)
 def job1():
     print('start interval task')
-    with open('/home/ai/devices.json') as f:
+    with open(os.path.expanduser('~/devices.json')) as f:
        device_info = json.load(f)
 
     for i in range(len(device_info['source'])):
-        img_dir = '/home/ai/Pictures/img/{}'.format(320 + i)
+        img_dir = os.path.expanduser('~/Pictures/img/{}').format(320 + i)
         if not os.path.exists(img_dir):
             continue
 
