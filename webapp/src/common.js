@@ -11,7 +11,7 @@ const MINIO_HOST = process.env.REACT_APP_MINIO_HOST || BROWSER_DOMAIN;
 const MINIO_PORT = Number(process.env.REACT_APP_MINIO_PORT || 9000);
 
 const LOCAL_VIDEO_PORT = process.env.REACT_APP_LOCAL_VIDEO_PORT || 8080
-const REMOTE_VIDEO_PORT = process.env.REACT_APP_REMOTE_VIDEO_PORT || 8090
+const REMOTE_VIDEO_PORT = process.env.REACT_APP_REMOTE_VIDEO_PORT || 8080
 
 export const Domain = `http://${SERVICE_HOST}:${SERVICE_PORT}`;
 export const VideoDomain = `http://${SERVICE_HOST}:${IS_INNER_NET || IS_LOCAL_HOST ? LOCAL_VIDEO_PORT : REMOTE_VIDEO_PORT}`;
