@@ -8,6 +8,8 @@ services:
             MYSQL_HOST: 127.0.0.1
             REDIS_HOST: 127.0.0.1
             VIDEO_TR_HOST: 127.0.0.1
+            DEPLOY_CODE: 150526B0012000310068
+            KAFKA_SERVER: 49.4.53.185:7072
         network_mode: host
         depends_on:
         - db
