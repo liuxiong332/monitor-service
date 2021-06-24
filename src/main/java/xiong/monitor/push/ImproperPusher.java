@@ -94,7 +94,7 @@ public class ImproperPusher {
         return todayCounter;
     }
 
-    public String uploadFile(Date date, InputStream ins, String extension) throws IOException {
+    public String uploadFile(Date date, InputStream ins, String extension, String alartType) throws IOException {
         String dateStr = formatDate("yyyyMMddHHmmss", date);
         String fileName = String.format("%s%s", dateStr, extension);
 
@@ -104,7 +104,7 @@ public class ImproperPusher {
         }
 
         String todayStr = formatDate("yyyy-MM-dd", date);
-        String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, "driver_call", fileType, fileName);
+        String obsPath = String.format("%s/%s/%s/%s/%s", deployCode, todayStr, alartType, fileType, fileName);
         logger.info("Will put file to OBS path {}", obsPath);
         obsClient.putObject(obsBucket, obsPath, ins);
 
@@ -173,17 +173,7 @@ public class ImproperPusher {
         Date currentDate = new Date();
         String eventId = genEventId(currentDate);
 
-        ArrayList<String> fileNames = new ArrayList<>();
-        for (String remotePath: remotePaths) {
-            try (InputStream is = downloadFromPath(remotePath)) {
-                logger.info("Will upload file {} to OBS", remotePath);
-                String extension = remotePath.substring(remotePath.lastIndexOf("."));
-                fileNames.add(uploadFile(currentDate, is, extension));
-                logger.info("Done upload file {} to OBS", remotePath);
-            }
-        }
-
-        logger.info("Will save event");
+        // 查找deviceIndex对应的 device
         Device device = null;
         if (deviceIndex != null) {
             List<Device> devices = deviceMapper.selectList(new QueryWrapper<>());
@@ -192,10 +182,8 @@ public class ImproperPusher {
                 device = filterDevices.get(deviceIndex);
             }
         }
-        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", remotePaths), device != null ? device.getDeviceId() : null, device != null ? device.getDeviceType() : null, ""));
-        logger.info("Done save event");
 
-        logger.info("Will send event to kafka");
+        // 获取device对应的场景
         String alartType = "driver_call";
         if (device != null) {
             switch (device.getDeviceType()) {
@@ -205,6 +193,23 @@ public class ImproperPusher {
                 case 4: alartType = "driver_call"; break;
             }
         }
+
+        ArrayList<String> fileNames = new ArrayList<>();
+        for (String remotePath: remotePaths) {
+            try (InputStream is = downloadFromPath(remotePath)) {
+                logger.info("Will upload file {} to OBS", remotePath);
+                String extension = remotePath.substring(remotePath.lastIndexOf("."));
+                fileNames.add(uploadFile(currentDate, is, extension, alartType));
+                logger.info("Done upload file {} to OBS", remotePath);
+            }
+        }
+
+        logger.info("Will save event");
+        eventRecordMapper.insert(new EventRecord(eventId, currentDate, String.join(",", remotePaths), device != null ? device.getDeviceId() : null, device != null ? device.getDeviceType() : null, ""));
+        logger.info("Done save event");
+
+        logger.info("Will send event to kafka");
+
         String finalAlartType = alartType;
         template.send("risk-safe-behavior-violation-file-info", new ObjectMapper().writeValueAsString(new HashMap<String, Object>() {{
             this.put("eventId", eventId);
