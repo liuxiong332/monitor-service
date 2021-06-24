@@ -196,11 +196,21 @@ public class ImproperPusher {
         logger.info("Done save event");
 
         logger.info("Will send event to kafka");
+        String alartType = "driver_call";
+        if (device != null) {
+            switch (device.getDeviceType()) {
+                case 1: alartType = "without_helmet"; break;
+                case 2: alartType = "control_room"; break;
+                case 3: alartType = "vehicle_intrusion"; break;
+                case 4: alartType = "driver_call"; break;
+            }
+        }
+        String finalAlartType = alartType;
         template.send("risk-safe-behavior-violation-file-info", new ObjectMapper().writeValueAsString(new HashMap<String, Object>() {{
             this.put("eventId", eventId);
             this.put("fileNames", fileNames);
             this.put("mineCode", deployCode);
-            this.put("alarmType", "driver_call");
+            this.put("alarmType", finalAlartType);
             this.put("date", formatDate("yyyy-MM-dd HH:mm:ss", currentDate));
             this.put("cameraId", 1);
             this.put("cameraName", "001号卡车");
