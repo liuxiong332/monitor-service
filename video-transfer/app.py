@@ -14,10 +14,14 @@ from shutil import copyfile
 app = Flask(__name__)
 scheduler = APScheduler()
 
+with open(os.path.join(os.path.dirname(__file__), "config.json")) as f:
+    config = json.load(f)
+print("Will apply config {}".format(config))
+
 @app.route("/")
 def transfer_video():
     client = minio.Minio(
-        "12.168.1.152:9000",
+        "localhost:9000",
         access_key="minio",
         secret_key="minio123",
         secure=False,
@@ -37,13 +41,13 @@ def transfer_video():
         client.fput_object(
             "videos", file_name, new_path, content_type="video/mp4"
         )
-        return "http://12.168.1.152:9000/videos/{}".format(file_name)
+        return "/videos/{}".format(file_name)
     else:
         file_name = "{}{}".format(int(datetime.datetime.now().timestamp()), extension)
         client.fput_object(
             "pictures", file_name, video_path,
         )
-        return "http://12.168.1.152:9000/pictures/{}".format(file_name)
+        return "/pictures/{}".format(file_name)
 
 
 @app.route("/startDS", methods=['POST'])
@@ -52,45 +56,50 @@ def start_ds():
     device_info = request.get_json(force=True)
     print(device_info)
     subprocess.run(['pkill', 'deepstream-app'])
-    
-    if not os.path.exists('~/deepstream'):
-        os.mkdir('~/deepstream')
 
-    # with open('~/deepstream/devices.json', 'w') as f:
-    #     f.write(json.dumps(device_info, indent=4))
+    with open(os.path.expanduser('~/devices.json'), 'w') as f:
+        f.write(json.dumps(device_info, indent=4))
 
     for index, dev_info in enumerate(device_info['source']):
         
         config_file = None
         if dev_info['scene'] == 'helmetIdentify':
-            config_file = '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-helmet-{}.txt'.format(index)
+            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-helmet-{}.txt'.format(index)) 
             copyfile(
-                '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-helmet.txt', 
+                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-helmet.txt'), 
                 config_file
             )
         elif dev_info['scene'] == 'carCheck':
-            config_file = '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-car-{}.txt'.format(index)
+            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-car-{}.txt'.format(index)) 
             copyfile(
-                '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-car.txt', 
+                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-car.txt'),
                 config_file
             )
         elif dev_info['scene'] == 'leaveCheck':
-            config_file = '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-custom-person-{}.txt'.format(index)
+            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-person-{}.txt'.format(index)) 
             copyfile(
-                '~/Documents/sources/objectDetector_Yolo/deepstream_app_config_yoloV3-person.txt', 
+                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-person.txt'), 
                 config_file
             )
 
         if config_file is not None:
-            with open(config_file, 'rw+') as f:
+            with open(config_file, 'r') as f:
                 content = f.read()
                 content1 =  re.sub(r'#(.+)', '', content)
                 content2= re.sub(r'uri=.+', 'uri={}'.format(dev_info['deviceIP']), content1)
-                last_content = re.sub(r'output-file=.+', 'output-file=/mnt/hls/hls_{}'.format(index), content2)  
+                content3 = re.sub(r'processing-width=320', 'processing-width={}'.format(320 + index), content2)
+                # content4 = re.sub(r'source-id=0', 'source-id={}'.format(index), content3)
+                last_content = re.sub(r'output-file=.+', 'output-file=/mnt/hls/hls_{}'.format(index), content3)  
+
+            with open(config_file, 'w') as f:
                 f.write(last_content)
 
+            hls_dir = '/mnt/hls/hls_{}'.format(index)
+            if not os.path.exists(hls_dir):
+                os.mkdir(hls_dir)
+                
             log_fn = open('dslog_{}.log'.format(index), 'w')
-            subprocess.Popen(['~/Documents/sources/objectDetector_Yolo/deepstream-app', '-c', config_file], stdout=log_fn, stderr=log_fn, cwd='~/Documents/sources/objectDetector_Yolo/')
+            subprocess.Popen([os.path.join(config['deepstream_path'], 'deepstream-app'), '-c', config_file], stdout=log_fn, stderr=log_fn, cwd=config['deepstream_path'])
 
     return 'OK'
 
@@ -116,11 +125,15 @@ def start_ds():
 @scheduler.task('interval', id='do_job_1', seconds=300, misfire_grace_time=900)
 def job1():
     print('start interval task')
-    with open('/home/optical/test_config/devices.json') as f:
+    with open(os.path.expanduser('~/devices.json')) as f:
        device_info = json.load(f)
 
     for i in range(len(device_info['source'])):
-        files = os.listdir('/home/optical/img/{}'.format(i))
+        img_dir = os.path.expanduser('~/Pictures/img/{}').format(320 + i)
+        if not os.path.exists(img_dir):
+            continue
+
+        files = os.listdir(img_dir)
         sorted_f = sorted([f for f in files if f.endswith('.jpg')], key=lambda fn: int(re.search(r"\w+_(\d+)\.\w+", fn).group(1)))
         img_fn = None
         if len(sorted_f) > 0:
@@ -137,17 +150,17 @@ def job1():
         if use_rate and img_fn is not None:
             hls_n = int(re.search(r"\w+_(\d+)\.\w+", img_fn).group(1)) / 180
             hls_fn = "live%.5d.ts" % (hls_n)
-            hls_path = os.path.join('/mnt/hls/hls_{}'.format(i + 1), hls_fn)
+            hls_path = os.path.join('/mnt/hls/hls_{}'.format(i), hls_fn)
 
             print('Try fetch {}'.format(hls_path))
             if not os.path.isfile(hls_path):
                 hls_path = None
 
-            img_path = os.path.join('/home/optical/img/{}'.format(i), img_fn) if img_fn is not None else None
+            img_path = os.path.join(img_dir, img_fn) if img_fn is not None else None
             valid_fs = [fp for fp in [img_path, hls_path] if fp is not None]
 
         elif img_fn is not None:
-            hls_dir = '/mnt/hls/hls_{}'.format(i + 1)
+            hls_dir = '/mnt/hls/hls_{}'.format(i)
             hls_files = os.listdir(hls_dir) if os.path.isdir(hls_dir) else []
             sorted_hls = sorted(hls_files, key=lambda fn: int(re.match(r"live(\d+)\.\w+", fn).group(1))) 
 
@@ -157,8 +170,8 @@ def job1():
 
             print('Get video {}'.format(hls_fn))
 
-            img_path = os.path.join('/home/optical/img/{}'.format(i), img_fn) if img_fn is not None else None
-            video_path = os.path.join('/mnt/hls/hls_{}'.format(i + 1), hls_fn) if hls_fn is not None else None
+            img_path = os.path.join(img_dir, img_fn) if img_fn is not None else None
+            video_path = os.path.join('/mnt/hls/hls_{}'.format(i), hls_fn) if hls_fn is not None else None
 
             valid_fs = [fp for fp in [img_path, video_path] if fp is not None]
 
@@ -168,7 +181,7 @@ def job1():
 
         print('Will delete images')
         for f in files:
-            os.remove(os.path.join('/home/optical/img/{}'.format(i), f))
+            os.remove(os.path.join(img_dir, f))
         print('Done delete images')
 
         # print('Will delete videos')
