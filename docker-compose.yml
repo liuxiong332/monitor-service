@@ -42,6 +42,10 @@ services:
                 # REACT_APP_SERVICE_PORT: 8088
                 # REACT_APP_MINIO_HOST: 222.74.238.102
                 # REACT_APP_MINIO_PORT: 9000
+                REACT_APP_SERVICE_PORT: 8088
+                REACT_APP_REMOTE_SERVICE_PORT: 8089
+                REACT_APP_LOCAL_VIDEO_PORT: 8090
+                REACT_APP_REMOTE_VIDEO_PORT: 8091
                 REACT_APP_MINIO_ACCESS_KEY: minio
                 REACT_APP_MINIO_SECRET_KEY: minio123
         ports: 
