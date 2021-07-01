@@ -42,6 +42,7 @@ services:
                 # REACT_APP_SERVICE_PORT: 8088
                 # REACT_APP_MINIO_HOST: 222.74.238.102
                 # REACT_APP_MINIO_PORT: 9000
+                REACT_APP_INNER_HOST: 172.16
                 REACT_APP_SERVICE_PORT: 8088
                 REACT_APP_REMOTE_SERVICE_PORT: 8089
                 REACT_APP_LOCAL_VIDEO_PORT: 8090
