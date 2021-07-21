@@ -33,7 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -170,7 +172,8 @@ public class ImproperPusher {
     }
 
     public void sendEvent(List<String> remotePaths, Integer deviceIndex) throws Exception {
-        Date currentDate = new Date();
+        long randomDays = (long)(Math.ceil(Math.random() * 14));
+        Date currentDate = Date.from(LocalDateTime.now().minusDays(randomDays).toInstant(ZoneOffset.ofHours(8)));
         String eventId = genEventId(currentDate);
 
         // 查找deviceIndex对应的 device
