@@ -173,7 +173,8 @@ public class ImproperPusher {
 
     public void sendEvent(List<String> remotePaths, Integer deviceIndex) throws Exception {
         long randomDays = (long)(Math.ceil(Math.random() * 14));
-        Date currentDate = Date.from(LocalDateTime.now().minusDays(randomDays).toInstant(ZoneOffset.ofHours(8)));
+        int randomHours = (int)(Math.ceil(Math.random() * 9)) + 9;
+        Date currentDate = Date.from(LocalDateTime.now().minusDays(randomDays).withHour(randomHours).toInstant(ZoneOffset.ofHours(8)));
         String eventId = genEventId(currentDate);
 
         // 查找deviceIndex对应的 device
