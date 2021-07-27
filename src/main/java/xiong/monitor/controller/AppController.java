@@ -14,6 +14,7 @@ import xiong.monitor.mapper.DeviceMapper;
 import xiong.monitor.push.ImproperPusher;
 import xiong.monitor.util.OutputResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,13 +35,18 @@ class AppController {
   @Data
   @AllArgsConstructor
   public static class EventInfo {
-    String[] filePath;
     Integer deviceId;
+    List<String> filePath;
+    String videoPath;
+    String imagePath;
   }
 
   @PostMapping("/app/sendMyEvent")
   OutputResult<Object> sendMyEvent(@RequestBody EventInfo eventInfo) throws Exception {
-    improperPusher.transferAndSendEvent(Arrays.asList(eventInfo.filePath), eventInfo.deviceId);
+    if (eventInfo.getVideoPath() != null || eventInfo.getImagePath() != null) {
+      eventInfo.setFilePath(Arrays.asList(eventInfo.getImagePath(), eventInfo.getVideoPath()));
+    }
+    improperPusher.transferAndSendEvent(eventInfo.filePath, eventInfo.deviceId);
     return new OutputResult<>(null);
   }
 }

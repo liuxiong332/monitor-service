@@ -42,6 +42,16 @@ obs:
 
 video:
   transfer-server: ${VIDEO_TR_HOST:12.168.1.152}:${VIDEO_TR_PORT:5000}
+
+alarmInfo:
+  env: ${ALART_ENV:inner}
+  ftpIP: ${ALART_FTP_IP:13.168.1.108}
+  ftpPort: ${ALART_FTP_PORT:21}
+  ftpUser: ${ALART_FTP_USER:photoncounts}
+  ftpPwd: ${ALART_FTP_PWD:gzss1019}
+  alarmPath: ${ALART_PATH:/opt/video/alarm}
+  filePath: ${ALART_FILE_PATH:/opt/video/files}
+
 #mybatis-plus配置控制台打印完整带参数SQL语句
 #mybatis-plus:
 #  configuration:
