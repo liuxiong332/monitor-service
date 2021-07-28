@@ -5,13 +5,13 @@
 
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:12.168.1.152}:${MYSQL_PORT:3306}/monitor_service?serverTimezone=UTC&useLegacyDatetimeCode=false
+    url: jdbc:mysql://${MYSQL_HOST:13.168.1.108}:${MYSQL_PORT:3306}/monitor_service?serverTimezone=UTC&useLegacyDatetimeCode=false
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:12345678}
   kafka:
     bootstrap-servers: ${KAFKA_SERVER:49.4.14.137:7072}
   redis:
-    host: ${REDIS_HOST:12.168.1.152}
+    host: ${REDIS_HOST:13.168.1.108}
     port: ${REDIS_PORT:6379}
   mail:
     host: smtp.163.com
@@ -41,7 +41,7 @@ obs:
   bucket: obs-risk-safe-pd
 
 video:
-  transfer-server: ${VIDEO_TR_HOST:12.168.1.152}:${VIDEO_TR_PORT:5000}
+  transfer-server: ${VIDEO_TR_HOST:13.168.1.108}:${VIDEO_TR_PORT:5000}
 
 alarmInfo:
   env: ${ALART_ENV:inner}

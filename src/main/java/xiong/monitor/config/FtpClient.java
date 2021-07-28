@@ -38,6 +38,7 @@ public class FtpClient {
 
     private FTPClient ftp;
 
+    @PostConstruct
     void init() throws IOException {
         ftp = new FTPClient();
 

@@ -73,8 +73,6 @@ public class ImproperPusher {
     @Autowired
     EventCounterMapper eventCounterMapper;
 
-    ObsClient obsClient;
-
     @Autowired
     EventRecordMapper eventRecordMapper;
 
