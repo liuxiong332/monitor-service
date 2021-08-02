@@ -8,7 +8,8 @@ WORKDIR /app
 
 COPY go.mod ./
 COPY go.sum ./
-RUN go mod download
+
+RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct && go mod download
 
 COPY *.go ./
 
