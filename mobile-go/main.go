@@ -70,13 +70,14 @@ func (saver AlarmSaver) saveAlarm(alarmInfo map[string]interface{}) {
 
 	alarmInfo["proofList"] = mediaList
 
-	dateStr := time.Now().Format("20060102150405")
+	dateStr := time.Now().Local().Format("20060102150405")
 	alarmType := alarmInfo["alarmType"].(float64)
 	devidno := alarmInfo["devidno"]
 
 	fileName := fmt.Sprintf("%s_%d_%s.json", devidno, int(alarmType), dateStr)
 
-	byteInfo, err := json.MarshalIndent(alarmInfo, "", "  ")
+	finalInfo := []interface{}{alarmInfo}
+	byteInfo, err := json.MarshalIndent(finalInfo, "", "  ")
 	failOnError(err, "Marshal error")
 
 	ioutil.WriteFile(path.Join(saver.savePath, fileName), byteInfo, 0666)
