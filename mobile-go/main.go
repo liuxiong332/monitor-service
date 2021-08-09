@@ -42,6 +42,9 @@ func NewAlarmSaver() AlarmSaver {
 }
 
 func (saver AlarmSaver) saveAlarm(alarmInfo map[string]interface{}) {
+	if alarmInfo["proofList"] == nil {
+		return
+	}
 	proofList := alarmInfo["proofList"].([]string)
 	mediaList := make([]string, 0)
 	for _, proof := range proofList {
@@ -68,10 +71,10 @@ func (saver AlarmSaver) saveAlarm(alarmInfo map[string]interface{}) {
 	alarmInfo["proofList"] = mediaList
 
 	dateStr := time.Now().Format("20060102150405")
-	alarmType := alarmInfo["alarmType"]
+	alarmType := alarmInfo["alarmType"].(int)
 	devidno := alarmInfo["devidno"]
 
-	fileName := fmt.Sprintf("%s_%s_%s.json", devidno, alarmType, dateStr)
+	fileName := fmt.Sprintf("%s_%d_%s.json", devidno, alarmType, dateStr)
 
 	byteInfo, err := json.MarshalIndent(alarmInfo, "", "  ")
 	failOnError(err, "Marshal error")
