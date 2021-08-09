@@ -100,7 +100,7 @@ func NewReceiver() MessageReceiver {
 
 func (receiver *MessageReceiver) startTimer(alarmId string) {
 	go func() {
-		timer := time.NewTimer(time.Minute * 2)
+		timer := time.NewTimer(time.Second * 30)
 		<-timer.C
 		receiver.timeChan <- alarmId
 	}()
