@@ -50,6 +50,40 @@ def transfer_video():
         return "/pictures/{}".format(file_name)
 
 
+DS_SRC_TEMPLATE = """
+[source{}]
+enable=1
+type=4
+uri={}
+num-sources=1
+gpu-id=0
+cudadec-memtype=0
+smart-record=2
+smart-rec-container=0
+smart-rec-file-prefix=camera{}
+smart-rec-dir-path={}
+smart-rec-video-cache=20
+smart-rec-default-duration=5
+smart-rec-duration=5
+smart-rec-start-time=2
+smart-rec-interval={}
+"""
+
+DS_SINK_TEMPLATE = """
+[sink{}]
+enable=1
+type=8
+container=1
+codec=1
+bitrate=5000000
+sync=0
+source-id={}
+gpu-id=0
+output-file=/mnt/hls/hls_{}
+nvbuf-memory-type=0
+link-to-demux=1
+"""
+
 @app.route("/startDS", methods=['POST'])
 def start_ds():
     print('start deepstream')
@@ -60,46 +94,40 @@ def start_ds():
     with open(os.path.expanduser('~/devices.json'), 'w') as f:
         f.write(json.dumps(device_info, indent=4))
 
+    src_templates = []
+    sink_templates = []
     for index, dev_info in enumerate(device_info['source']):
         
-        config_file = None
-        if dev_info['scene'] == 'helmetIdentify':
-            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-helmet-{}.txt'.format(index)) 
-            copyfile(
-                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-helmet.txt'), 
-                config_file
-            )
+        config_type = 0
+        if dev_info['scene'] == 'leaveCheck':
+            config_type = 0
         elif dev_info['scene'] == 'carCheck':
-            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-car-{}.txt'.format(index)) 
-            copyfile(
-                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-car.txt'),
-                config_file
-            )
-        elif dev_info['scene'] == 'leaveCheck':
-            config_file = os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-custom-person-{}.txt'.format(index)) 
-            copyfile(
-                os.path.join(config['deepstream_path'], 'deepstream_app_config_yoloV3-person.txt'), 
-                config_file
-            )
+            config_type = 1
+        elif dev_info['scene'] == 'helmetIdentify':
+            config_type = 2
+        else:
+            config_type = 0
 
-        if config_file is not None:
-            with open(config_file, 'r') as f:
-                content = f.read()
-                content1 =  re.sub(r'#(.+)', '', content)
-                content2= re.sub(r'uri=.+', 'uri={}'.format(dev_info['deviceIP']), content1)
-                content3 = re.sub(r'processing-width=320', 'processing-width={}'.format(320 + index), content2)
-                # content4 = re.sub(r'source-id=0', 'source-id={}'.format(index), content3)
-                last_content = re.sub(r'output-file=.+', 'output-file=/mnt/hls/hls_{}'.format(index), content3)  
+        img_path = config['image_path'].format(index)
+        src_templates.append(DS_SRC_TEMPLATE.format(index, dev_info['deviceIP'], index, img_path, config_type))
+        sink_templates.append(DS_SINK_TEMPLATE.format(index, index, index))
 
-            with open(config_file, 'w') as f:
-                f.write(last_content)
+        hls_dir = '/mnt/hls/hls_{}'.format(index)
+        if not os.path.exists(hls_dir):
+            os.mkdir(hls_dir)
 
-            hls_dir = '/mnt/hls/hls_{}'.format(index)
-            if not os.path.exists(hls_dir):
-                os.mkdir(hls_dir)
-                
-            log_fn = open('dslog_{}.log'.format(index), 'w')
-            subprocess.Popen([os.path.join(config['deepstream_path'], 'deepstream-app'), '-c', config_file], stdout=log_fn, stderr=log_fn, cwd=config['deepstream_path'])
+    with open("./deepstream_app_config.txt", "rw") as f:
+        content = f.read()
+        content = content.replace("batch-size=3", "batch-size={}".format(len(src_templates)))      
+        content = content.replace("{source}", "\n".join(src_templates))
+        content = content.replace("{sink}", "\n".join(sink_templates))
+
+    config_file = os.path.join(config['deepstream_path'], "deepstream_app_config.txt")
+    with open(config_file, 'w') as f:
+        f.write(content)
+
+    log_fn = open('dslog_{}.log'.format(index), 'w')
+    subprocess.Popen([os.path.join(config['deepstream_path'], 'deepstream-app'), '-c', config_file], stdout=log_fn, stderr=log_fn, cwd=config['deepstream_path'])
 
     return 'OK'
 

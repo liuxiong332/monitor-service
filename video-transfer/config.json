@@ -1,4 +1,4 @@
 {
     "deepstream_path": "/home/ai/00_Projects/sources/objectDetector_Yolo",
-    "image_path": ""
+    "image_path": "/home/photoncounts/ds/videos/source{}"
 }
