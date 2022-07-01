@@ -5,6 +5,7 @@ WORKDIR /usr/src/app
 # copy the project files
 COPY ./pom.xml ./pom.xml
 
+RUN mvn dependency:tree -Dverbose | grep log4
 # build all dependencies for offline use
 RUN mvn dependency:go-offline -B
 
